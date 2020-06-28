@@ -1,0 +1,136 @@
+﻿<Window x:Class="Darknet.Dataset.Merger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Darknet.Dataset.Merger"
+        mc:Ignorable="d"
+        Title="Darknet dataset merger" Height="670" Width="650" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="220"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="28"/>
+        </Grid.RowDefinitions>
+        <ListBox HorizontalAlignment="Stretch" ItemsSource="{Binding Datasets}" VerticalAlignment="Stretch" SelectionChanged="ListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DatasetPath}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Append dataset" Command="{Binding AppendDatasetCommand}" Grid.Column="0" />
+            <Button Content="Remove dataset" Command="{Binding RemoveDatasetCommand}" Grid.Column="1" />
+            <Button Content="View dataset" Command="{Binding ViewDatasetCommand}" Grid.Column="2" />
+            <Button Content="Clean dataset list" Command="{Binding RemoveAllDatasetCommand}" Grid.Column="3" />
+            <Button Content="Create dataset" Command="{Binding CreateDatasetCommand}" Grid.Column="4" />
+        </Grid>
+
+        <TextBlock HorizontalAlignment="Stretch" Grid.Row="2" TextWrapping="Wrap" Text="{Binding Info}" VerticalAlignment="Center"/>
+
+        <ListBox Grid.Row="3" ItemsSource="{Binding Classes}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"></ColumnDefinition>
+                            <ColumnDefinition Width="120"></ColumnDefinition>
+                            <ColumnDefinition Width="120"></ColumnDefinition>
+                            <ColumnDefinition Width="120"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" Content="{Binding Name}" IsChecked="{Binding Active}" VerticalAlignment="Center" HorizontalAlignment="Left"></CheckBox>
+                        <CheckBox Grid.Column="1" Content="Priority in index" IsChecked="{Binding IsPriorityInIndex}" VerticalAlignment="Center" HorizontalAlignment="Left"></CheckBox>
+                        <Label Grid.Column="2" Content="Index" VerticalAlignment="Center" Margin="0 0 15 0" HorizontalAlignment="Right"></Label>
+                        <TextBox Grid.Column="3" Text="{Binding Index}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60"></TextBox>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+
+        <Grid HorizontalAlignment="Stretch" Grid.Row="4" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="75"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Output" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBox TextWrapping="Wrap" Text="{Binding OutputFolder}" VerticalAlignment="Center" Grid.Column="1"/>
+            <Button Content="View" Command="{Binding SelectOutpouFolderCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="2"/>
+        </Grid>
+        <Grid HorizontalAlignment="Stretch" Grid.Row="5" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox x:Name="cbCut" Content="Cut" IsChecked="{Binding Cut}" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" IsEnabled="{Binding ElementName=cbCut, Path=IsChecked}" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CutWidth}" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="2" IsEnabled="{Binding ElementName=cbCut, Path=IsChecked}" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding CutHeight}" VerticalAlignment="Center"/>
+            <CheckBox Content="Fragments overlay" Grid.Column="3" HorizontalAlignment="Center" IsChecked="{Binding OverrideFragments}" VerticalAlignment="Center"/>
+            <CheckBox Content="Without class" Grid.Column="5" IsChecked="{Binding WithoutClass}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+        <Button Command="{Binding MergeCommand}" Content="Merge" HorizontalAlignment="Stretch" Grid.Row="6" VerticalAlignment="Center"/>
+
+
+        <GroupBox Header="Augmentations" Grid.Row="7">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+                <CheckBox Content="Brightness" IsChecked="{Binding Brightness}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                <CheckBox Content="Contrast" IsChecked="{Binding Contrast}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+                <CheckBox Content="RGB diffs" IsChecked="{Binding RGBDiffs}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
+
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Rotation" IsChecked="{Binding Rotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"/>
+                <CheckBox Content="Mirrors" IsChecked="{Binding Mirrors}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Stretching" IsChecked="{Binding Stretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Shifts" IsChecked="{Binding Shifts}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3"/>
+
+                <CheckBox Content="Invert" IsChecked="{Binding Invert}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
+                <CheckBox Content="Gotham" IsChecked="{Binding Gotham}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+                <CheckBox Content="Sepia" IsChecked="{Binding Sepia}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2"/>
+                <CheckBox Content="Blur" IsChecked="{Binding Blur}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"/>
+
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="BBox rotation" IsChecked="{Binding BBoxRotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="0"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="BBox shifts" IsChecked="{Binding BBoxShifts}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="BBox stretching" IsChecked="{Binding BBoxStretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="BBox mirrors" IsChecked="{Binding BBoxMirrors}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="3"/>
+            </Grid>
+        </GroupBox>
+        <Grid HorizontalAlignment="Stretch" Grid.Row="8" VerticalAlignment="Stretch">
+            <ProgressBar Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressCurrent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ProgressCurrent}"/>
+        </Grid>
+
+    </Grid>
+</Window>
