@@ -1,2 +1,2 @@
-# darkset
+# Darkset
 Manage darknet datasets
