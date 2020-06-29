@@ -21,11 +21,14 @@ namespace Darknet.Dataset.Merger.ViewModel
         private ICommand _setDefaultClassCommand;
         private ICommand _removeClassCommandCommand;
         private ICommand _removeBoxCommand;
+        private ICommand _changeBoxClassCommand;
 
         public ICommand AppendClassCommand => _appendClassCommand;
         public ICommand SetDefaultClassCommand => _setDefaultClassCommand;
         public ICommand RemoveClassCommandCommand => _removeClassCommandCommand;
         public ICommand RemoveBoxCommand => _removeBoxCommand;
+        public ICommand ChangeBoxClassCommand => _changeBoxClassCommand;
+        
 
         private void AppendClass(object state)
         {
@@ -66,6 +69,21 @@ namespace Darknet.Dataset.Merger.ViewModel
                     _classes.Remove(className);
                     SaveClasses();
                     OnPropertyChanged("Classes");
+
+                    var to_remove = new List<Annotation>();
+                    foreach (var image in _images)
+                    {
+                        to_remove.Clear();
+                        foreach (var a in image.Annotations)
+                        {
+                            if (string.Equals(className, a.Label))
+                            {
+                                to_remove.Add(a);
+                            }
+                        }
+                        foreach (var a in to_remove) image.RemoveAnnotations(a);
+                    }
+                    UpdateBBoxes();
                 }
             }
         }
@@ -76,6 +94,21 @@ namespace Darknet.Dataset.Merger.ViewModel
             if (bbox != null && _currentImage != null)
             {
                 _currentImage.RemoveAnnotations(bbox);
+                UpdateBBoxes();
+            }
+        }
+
+        private void ChangeBoxClass(object state)
+        {
+            var bbox = state as Annotation;
+            if (bbox != null && _currentImage != null)
+            {
+                var sw = new ClassSelectionWindow(_classes.ToList());
+                if (sw.ShowDialog() == true)
+                {
+                    bbox.Label = sw.SelectedClass;
+                    bbox.Class = _classes.IndexOf(bbox.Label);
+                }
                 UpdateBBoxes();
             }
         }
@@ -126,6 +159,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             _setDefaultClassCommand = new RelayCommand(_ => true, SetDefaultClass);
             _removeClassCommandCommand = new RelayCommand(_ => true, RemoveClass);
             _removeBoxCommand = new RelayCommand(_ => true, RemoveBox);
+            _changeBoxClassCommand = new RelayCommand(_ => true, ChangeBoxClass);
         }
 
         public void SetFolder(string folder)
