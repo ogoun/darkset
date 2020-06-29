@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ZeroLevel;
 
 namespace Darknet.Dataset.Merger
 {
@@ -114,14 +113,6 @@ namespace Darknet.Dataset.Merger
                             }
                             _images.Add(new ImageInfo(fp, type, a));
                         }
-                        else
-                        {
-                            Log.Warning($"File {labelFile} missed");
-                        }
-                    }
-                    else
-                    {
-                        Log.Warning($"File {file} missed");
                     }
                 }
             });
