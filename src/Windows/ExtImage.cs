@@ -83,8 +83,15 @@ namespace Darknet.Dataset.Merger.Windows
                 var right = Math.Max(_bboxStartPoint.Value.X, _bboxEndPoint.Value.X);
                 var top = Math.Min(_bboxStartPoint.Value.Y, _bboxEndPoint.Value.Y);
                 var bottom = Math.Max(_bboxStartPoint.Value.Y, _bboxEndPoint.Value.Y);
+
+                if (left < 0) left = 0;
+                if (right > ActualWidth) right = ActualWidth;
+                if (top < 0 ) top = 0;
+                if (bottom > ActualHeight) bottom = ActualHeight;
+
                 var width = right - left;
                 var height = bottom - top;
+
                 if ((width * height) > 0.001) // mouse false positives
                 {
                     var a = new Annotation
