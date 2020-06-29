@@ -46,7 +46,7 @@
             <Button HorizontalAlignment="Stretch" Command="{Binding RemoveClassCommandCommand}" CommandParameter="{Binding ElementName=lbClasses, Path=SelectedItem}" Grid.Row="5" Margin="2" VerticalAlignment="Stretch" Content="Remove" />
             <Separator Grid.Row="6"></Separator>
             <TextBlock HorizontalAlignment="Center" Grid.Row="7" TextWrapping="Wrap" Text="Boxes" VerticalAlignment="Center"/>
-            <ListBox x:Name="lbBboxes" HorizontalAlignment="Stretch" Grid.Row="8" VerticalAlignment="Stretch" ItemsSource="{Binding BBoxes}">
+            <ListBox x:Name="lbBboxes" HorizontalAlignment="Stretch" Grid.Row="8" VerticalAlignment="Stretch" ItemsSource="{Binding BBoxes}" SelectionChanged="lbBboxes_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Description}"/>

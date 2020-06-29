@@ -92,6 +92,7 @@ namespace Darknet.Dataset.Merger.Windows
             if (e.AddedItems?.Count > 0)
             {
                 (this.DataContext as MakeDatasetContext).SetCurrentImage(e.AddedItems[0] as ImageInfo);
+                border.SetSelectedBBox(null);
             }
         }
 
@@ -139,6 +140,14 @@ namespace Darknet.Dataset.Merger.Windows
         private void Window_Closed(object sender, EventArgs e)
         {
             UnhookWinEvent(m_hhook);
+        }
+
+        private void lbBboxes_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems?.Count > 0)
+            {
+                border.SetSelectedBBox(e.AddedItems[0] as Annotation);
+            }
         }
     }
 }

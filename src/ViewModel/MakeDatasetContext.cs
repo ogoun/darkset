@@ -28,7 +28,7 @@ namespace Darknet.Dataset.Merger.ViewModel
         public ICommand RemoveClassCommandCommand => _removeClassCommandCommand;
         public ICommand RemoveBoxCommand => _removeBoxCommand;
         public ICommand ChangeBoxClassCommand => _changeBoxClassCommand;
-        
+
 
         private void AppendClass(object state)
         {

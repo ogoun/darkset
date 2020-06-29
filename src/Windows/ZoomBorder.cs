@@ -43,6 +43,15 @@ namespace Darknet.Dataset.Merger.Windows
             }
         }
 
+        public void SetSelectedBBox(Annotation bbox)
+        {
+            if (Child != null)
+            {
+                (Child as ExtImage).SetSelectedBBox(bbox);
+                this.Child?.InvalidateVisual();
+            }
+        }
+
         public void Initialize(UIElement element)
         {
             this.child = element;
@@ -89,11 +98,11 @@ namespace Darknet.Dataset.Merger.Windows
                 var st = GetScaleTransform(child);
                 var tt = GetTranslateTransform(child);
 
-                double zoom = e.Delta > 0 ? .06 : -.06;
+                double zoom = e.Delta > 0 ? .08 : -.08;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
                     return;
 
-                if (!(e.Delta < 0) && (st.ScaleX > 2.6 || st.ScaleY > 2.6))
+                if (!(e.Delta < 0) && (st.ScaleX > 4 || st.ScaleY > 4))
                     return;
 
                 Point relative = e.GetPosition(child);
