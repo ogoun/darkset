@@ -22,7 +22,7 @@ namespace Darknet.Dataset.Merger.Services
         private const float MAX_SIDE_LIMIT = 1216.0f;
         private const float CROPED_BBOX_AREA_MIN_PART = 0.1f;
 
-        public static int Augmentate(ImageInfo imageInfo, AugmentationContext context)
+        public static int Augmentate(ImageInfo imageInfo, AugmentationContext context, AugmentationOptions options)
         {
             var sb = new StringBuilder();
             foreach (var a in imageInfo.Annotations)
@@ -87,23 +87,23 @@ namespace Darknet.Dataset.Merger.Services
                 imageFactory.Load(photoBytes);
                 using (var resized = resize(imageFactory))
                 {
-                    ApplyAugmentations(resized, local, context);
+                    ApplyAugmentations(resized, local, context, options);
                 }
                 if (local.Image.Annotations.Any()
-                    && context.Options.Cut
-                    && context.Options.CutWidth > 0
-                    && context.Options.CutHeight > 0
-                    && context.Options.CutWidth < (imageFactory.Image.Width / 1.5)
-                    && context.Options.CutHeight < (imageFactory.Image.Width / 1.5))
+                    && options.Cut
+                    && options.CutWidth > 0
+                    && options.CutHeight > 0
+                    && options.CutWidth < (imageFactory.Image.Width / 1.5)
+                    && options.CutHeight < (imageFactory.Image.Width / 1.5))
                 {
-                    var xs = context.Options.CutOverlaps ? (int)(context.Options.CutWidth * .8f) : context.Options.CutWidth;
-                    var ys = context.Options.CutOverlaps ? (int)(context.Options.CutHeight * .8f) : context.Options.CutHeight;
-                    var rect = new Rectangle { Width = context.Options.CutWidth, Height = context.Options.CutHeight };
+                    var xs = options.CutOverlaps ? (int)(options.CutWidth * .8f) : options.CutWidth;
+                    var ys = options.CutOverlaps ? (int)(options.CutHeight * .8f) : options.CutHeight;
+                    var rect = new Rectangle { Width = options.CutWidth, Height = options.CutHeight };
 
                     for (var x = 0; x < imageFactory.Image.Width - xs; x += xs)
                     {
                         var startx = x;
-                        var dx = (x + context.Options.CutWidth) - imageFactory.Image.Width;
+                        var dx = (x + options.CutWidth) - imageFactory.Image.Width;
                         if (dx > 0)
                         {
                             startx -= dx;
@@ -111,7 +111,7 @@ namespace Darknet.Dataset.Merger.Services
                         for (var y = 0; y < imageFactory.Image.Height - ys; y += ys)
                         {
                             var starty = y;
-                            var dy = (y + context.Options.CutHeight) - imageFactory.Image.Height;
+                            var dy = (y + options.CutHeight) - imageFactory.Image.Height;
                             if (dy > 0)
                             {
                                 starty -= dy;
@@ -133,9 +133,9 @@ namespace Darknet.Dataset.Merger.Services
                                     var bbox_y = bbox_cy - bbox_h / 2.0f;
 
                                     var left = (float)Math.Max(bbox_x, 0);
-                                    var right = (float)Math.Min(bbox_x + bbox_w, context.Options.CutWidth);
+                                    var right = (float)Math.Min(bbox_x + bbox_w, options.CutWidth);
                                     var top = (float)Math.Max(bbox_y, 0);
-                                    var bottom = (float)Math.Min(bbox_y + bbox_h, context.Options.CutHeight);
+                                    var bottom = (float)Math.Min(bbox_y + bbox_h, options.CutHeight);
                                     var width = (float)(right - left);
                                     var height = (float)(bottom - top);
 
@@ -171,7 +171,7 @@ namespace Darknet.Dataset.Merger.Services
                                     store(cropped, croppedContext.SourceAnnotationText);
                                     using (var croppedAndResized = resize(cropped))
                                     {
-                                        ApplyAugmentations(croppedAndResized, croppedContext, context);
+                                        ApplyAugmentations(croppedAndResized, croppedContext, context, options);
                                     }
                                 }
                             }
@@ -182,7 +182,7 @@ namespace Darknet.Dataset.Merger.Services
             return context.Counter;
         }
 
-        private static void ApplyAugmentations(ImageFactory imageFactory, LocalAnnotationContext localContext, AugmentationContext context)
+        private static void ApplyAugmentations(ImageFactory imageFactory, LocalAnnotationContext localContext, AugmentationContext context, AugmentationOptions options)
         {
             var temporary = new Func<ImageFactory, ImageFactory>(f =>
             {
@@ -209,24 +209,24 @@ namespace Darknet.Dataset.Merger.Services
                 ifac.Reset();
                 File.WriteAllText(lblName, ann);
             });
-            if (context.Options.RGBDiffs)
+            if (options.RGBDiffs)
             {
                 imageFactory.Hue(180, true);
                 store(imageFactory, localContext.SourceAnnotationText);
                 imageFactory.Filter(MatrixFilters.HiSatch);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Brightness)
+            if (options.Brightness)
             {
                 imageFactory.Brightness(50);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Contrast)
+            if (options.Contrast)
             {
                 imageFactory.Contrast(50);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Mirrors)
+            if (options.Mirrors)
             {
                 var horizontallAnn = new StringBuilder();
                 var verticalAnn = new StringBuilder();
@@ -245,43 +245,43 @@ namespace Darknet.Dataset.Merger.Services
                 imageFactory.Flip(true);
                 store(imageFactory, verticalAnn.ToString());
             }
-            if (context.Options.Blur)
+            if (options.Blur)
             {
                 imageFactory.GaussianBlur(7);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Grayscale)
+            if (options.Grayscale)
             {
                 imageFactory.Filter(MatrixFilters.GreyScale);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Gotham)
+            if (options.Gotham)
             {
                 imageFactory.Filter(MatrixFilters.Gotham);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Sepia)
+            if (options.Sepia)
             {
                 imageFactory.Filter(MatrixFilters.Sepia);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Invert)
+            if (options.Invert)
             {
                 imageFactory.Filter(MatrixFilters.Invert);
                 store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.Rotation)
+            if (options.Rotation)
             {
 
             }
-            if (context.Options.Shifts)
+            if (options.Shifts)
             {
 
             }
-            if (context.Options.Stretching)
+            if (options.Stretching)
             {
             }
-            if (context.Options.BBoxMirrors)
+            if (options.BBoxMirrors)
             {
                 //foreach (var a in localContext.Image.Annotations)
                 //{
@@ -300,13 +300,13 @@ namespace Darknet.Dataset.Merger.Services
                 //}
                 //store(imageFactory, localContext.SourceAnnotationText);
             }
-            if (context.Options.BBoxRotation)
+            if (options.BBoxRotation)
             {
             }
-            if (context.Options.BBoxShifts)
+            if (options.BBoxShifts)
             {
             }
-            if (context.Options.BBoxStretching)
+            if (options.BBoxStretching)
             {
             }
         }

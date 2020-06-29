@@ -18,6 +18,7 @@ namespace Darknet.Dataset.Merger.Windows
         private KeyMode _keyMode = KeyMode.None;
 
         #region Dirty hack
+        IntPtr m_hhook;
         WinEventDelegate dele = null;
         private const uint WINEVENT_OUTOFCONTEXT = 0;
         private const uint EVENT_SYSTEM_FOREGROUND = 3;
@@ -28,6 +29,8 @@ namespace Darknet.Dataset.Merger.Windows
         static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        [DllImport("user32.dll")]
+        static extern bool UnhookWinEvent(IntPtr hWinEventHook);
         private string GetActiveWindowTitle()
         {
             const int nChars = 256;
@@ -61,7 +64,7 @@ namespace Darknet.Dataset.Merger.Windows
             _folder = folderPath;
             this.DataContext = new MakeDatasetContext();
             dele = new WinEventDelegate(WinEventProc);
-            IntPtr m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
+            m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
         }        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -131,6 +134,11 @@ namespace Darknet.Dataset.Merger.Windows
                 _keyMode |= KeyMode.Ctrl;
             }
             border.SetKeyMode(_keyMode);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            UnhookWinEvent(m_hhook);
         }
     }
 }

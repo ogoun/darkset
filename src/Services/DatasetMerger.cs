@@ -47,7 +47,6 @@ namespace Darknet.Dataset.Merger.Services
             var augmentationContext = new AugmentationContext(counter, augFolder, files)
             {
                 Classes = classes,
-                Options = options.Augmentations,
                 WithoutClass = options.WithoutClass
             };
             int image_progress = 0;
@@ -81,7 +80,7 @@ namespace Darknet.Dataset.Merger.Services
                     files.Add(newImagePath);
                     File.WriteAllText(Path.Combine(objFolder, counter.ToString("D6") + ".txt"), sb.ToString());
                     counter++;
-                    counter = Augmentator.Augmentate(image, augmentationContext);                    
+                    counter = Augmentator.Augmentate(image, augmentationContext, dataset.Augmentations);                    
                     progress(image_progress);
                     image_progress++;
                 }

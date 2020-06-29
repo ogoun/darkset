@@ -35,140 +35,194 @@ namespace Darknet.Dataset.Merger
         #endregion
 
         #region Augmentations
-        private AugmentationOptions _augmentations = new AugmentationOptions();
+
         public bool Grayscale
         {
-            get { return _augmentations.Grayscale; }
-            set { _augmentations.Grayscale = value; OnPropertyChanged("Grayscale"); }
+            get { return _selectedDataset?.Augmentations?.Grayscale ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.Grayscale = value; OnPropertyChanged("Grayscale"); } }
         }
 
         public bool Brightness
         {
-            get { return _augmentations.Brightness; }
-            set { _augmentations.Brightness = value; OnPropertyChanged("Brightness"); }
+            get { return _selectedDataset?.Augmentations?.Brightness ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Brightness = value; OnPropertyChanged("Brightness"); }
+            }
         }
 
         public bool Contrast
         {
-            get { return _augmentations.Contrast; }
-            set { _augmentations.Contrast = value; OnPropertyChanged("Contrast"); }
+            get { return _selectedDataset?.Augmentations?.Contrast ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Contrast = value; OnPropertyChanged("Contrast"); }
+            }
         }
 
         public bool RGBDiffs
         {
-            get { return _augmentations.RGBDiffs; }
-            set { _augmentations.RGBDiffs = value; OnPropertyChanged("RGBDiffs"); }
+            get { return _selectedDataset?.Augmentations?.RGBDiffs ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.RGBDiffs = value; OnPropertyChanged("RGBDiffs"); }
+            }
         }
 
         public bool Rotation
         {
-            get { return _augmentations.Rotation; }
-            set { _augmentations.Rotation = value; OnPropertyChanged("Rotation"); }
+            get { return _selectedDataset?.Augmentations?.Rotation ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Rotation = value; OnPropertyChanged("Rotation"); }
+            }
         }
 
         public bool Mirrors
         {
-            get { return _augmentations.Mirrors; }
-            set { _augmentations.Mirrors = value; OnPropertyChanged("Mirrors"); }
+            get { return _selectedDataset?.Augmentations?.Mirrors ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Mirrors = value; OnPropertyChanged("Mirrors"); }
+            }
         }
 
         public bool Stretching
         {
-            get { return _augmentations.Stretching; }
-            set { _augmentations.Stretching = value; OnPropertyChanged("Stretching"); }
+            get { return _selectedDataset?.Augmentations?.Stretching ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Stretching = value; OnPropertyChanged("Stretching"); }
+            }
         }
 
         public bool Shifts
         {
-            get { return _augmentations.Shifts; }
-            set { _augmentations.Shifts = value; OnPropertyChanged("Shifts"); }
+            get { return _selectedDataset?.Augmentations?.Shifts ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Shifts = value; OnPropertyChanged("Shifts"); }
+            }
         }
 
         public bool Invert
         {
-            get { return _augmentations.Invert; }
-            set { _augmentations.Invert = value; OnPropertyChanged("Invert"); }
+            get { return _selectedDataset?.Augmentations?.Invert ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Invert = value; OnPropertyChanged("Invert"); }
+            }
         }
 
         public bool Gotham
         {
-            get { return _augmentations.Gotham; }
-            set { _augmentations.Gotham = value; OnPropertyChanged("Gotham"); }
+            get { return _selectedDataset?.Augmentations?.Gotham ?? false; }
+            set { _selectedDataset.Augmentations.Gotham = value; OnPropertyChanged("Gotham"); }
         }
 
         public bool Sepia
         {
-            get { return _augmentations.Sepia; }
-            set { _augmentations.Sepia = value; OnPropertyChanged("Sepia"); }
+            get { return _selectedDataset?.Augmentations?.Sepia ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Sepia = value; OnPropertyChanged("Sepia"); }
+            }
         }
 
         public bool Blur
         {
-            get { return _augmentations.Blur; }
-            set { _augmentations.Blur = value; OnPropertyChanged("Blur"); }
+            get { return _selectedDataset?.Augmentations?.Blur ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Blur = value; OnPropertyChanged("Blur"); }
+            }
         }
 
         public bool BBoxRotation
         {
-            get { return _augmentations.BBoxRotation; }
-            set { _augmentations.BBoxRotation = value; OnPropertyChanged("BBoxRotation"); }
+            get { return _selectedDataset?.Augmentations?.BBoxRotation ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxRotation = value; OnPropertyChanged("BBoxRotation"); }
+            }
         }
 
         public bool BBoxShifts
         {
-            get { return _augmentations.BBoxShifts; }
-            set { _augmentations.BBoxShifts = value; OnPropertyChanged("BBoxShifts"); }
+            get { return _selectedDataset?.Augmentations?.BBoxShifts ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxShifts = value; OnPropertyChanged("BBoxShifts"); }
+            }
         }
 
         public bool BBoxStretching
         {
-            get { return _augmentations.BBoxStretching; }
-            set { _augmentations.BBoxStretching = value; OnPropertyChanged("BBoxStretching"); }
+            get { return _selectedDataset?.Augmentations?.BBoxStretching ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxStretching = value; OnPropertyChanged("BBoxStretching"); }
+            }
         }
 
         public bool BBoxMirrors
         {
-            get { return _augmentations.BBoxMirrors; }
-            set { _augmentations.BBoxMirrors = value; OnPropertyChanged("BBoxMirrors"); }
+            get { return _selectedDataset?.Augmentations?.BBoxMirrors ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxMirrors = value; OnPropertyChanged("BBoxMirrors"); }
+            }
         }
 
         public bool Cut
         {
-            get { return _augmentations.Cut; }
-            set { _augmentations.Cut = value; OnPropertyChanged("Cut"); }
+            get { return _selectedDataset?.Augmentations?.Cut ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Cut = value; OnPropertyChanged("Cut"); }
+            }
         }
 
         public bool OverrideFragments
         {
-            get { return _augmentations.CutOverlaps; }
-            set { _augmentations.CutOverlaps = value; OnPropertyChanged("OverrideFragments"); }
+            get { return _selectedDataset?.Augmentations?.CutOverlaps ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.CutOverlaps = value; OnPropertyChanged("OverrideFragments"); }
+            }
         }
 
         public string CutWidth
         {
-            get { return _augmentations.CutWidth.ToString(); }
+            get { return _selectedDataset?.Augmentations?.CutWidth.ToString(); }
             set
             {
-                int test;
-                if (int.TryParse(value, out test))
+                if (_selectedDataset != null)
                 {
-                    _augmentations.CutWidth = test;
+                    int test;
+                    if (int.TryParse(value, out test))
+                    {
+                        _selectedDataset.Augmentations.CutWidth = test;
+                    }
+                    OnPropertyChanged("CutWidth");
                 }
-                OnPropertyChanged("CutWidth");
             }
         }
 
         public string CutHeight
         {
-            get { return _augmentations.CutHeight.ToString(); }
+            get { return _selectedDataset?.Augmentations?.CutHeight.ToString(); }
             set
             {
-                int test;
-                if (int.TryParse(value, out test))
+                if (_selectedDataset != null)
                 {
-                    _augmentations.CutHeight = test;
+                    int test;
+                    if (int.TryParse(value, out test))
+                    {
+                        _selectedDataset.Augmentations.CutHeight = test;
+                    }
+                    OnPropertyChanged("CutHeight");
                 }
-                OnPropertyChanged("CutHeight");
             }
         }
         #endregion
@@ -275,6 +329,30 @@ namespace Darknet.Dataset.Merger
         public void SelectDataset(Dataset dataset)
         {
             _selectedDataset = dataset;
+
+
+            // i know.. i know.. but i so lazy
+
+            OnPropertyChanged("Grayscale");
+            OnPropertyChanged("Brightness");
+            OnPropertyChanged("Contrast");
+            OnPropertyChanged("RGBDiffs");
+            OnPropertyChanged("Rotation");
+            OnPropertyChanged("Mirrors");
+            OnPropertyChanged("Stretching");
+            OnPropertyChanged("Shifts");
+            OnPropertyChanged("Invert");
+            OnPropertyChanged("Gotham");
+            OnPropertyChanged("Sepia");
+            OnPropertyChanged("Blur");
+            OnPropertyChanged("BBoxRotation");
+            OnPropertyChanged("BBoxShifts");
+            OnPropertyChanged("BBoxStretching");
+            OnPropertyChanged("BBoxMirrors");
+            OnPropertyChanged("Cut");
+            OnPropertyChanged("OverrideFragments");
+            OnPropertyChanged("CutWidth");
+            OnPropertyChanged("CutHeight");
         }
 
         public void SelectOutputFolder(object state)
@@ -415,7 +493,6 @@ namespace Darknet.Dataset.Merger
                     TargetFolder = _outputFolder,
                     Datasets = Datasets,
                     WithoutClass = _withoutClass,
-                    Augmentations = _augmentations,
                     Classes = Classes
                 }, p =>
                 {

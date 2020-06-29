@@ -40,10 +40,10 @@ TestsResult.html
 [Tt]humbs.db
 
 # NuGet
-/packages/
+*/packages/
 
 # Build
-/artifacts/
+*/artifacts/
 
 .localhistory
 .vs/

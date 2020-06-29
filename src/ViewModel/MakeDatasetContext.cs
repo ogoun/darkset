@@ -193,10 +193,18 @@ namespace Darknet.Dataset.Merger.ViewModel
             var filelist = new List<string>();
             if (Directory.Exists(objFolder))
             {
-                filelist.AddRange(Directory.GetFiles(objFolder, "*.*").Where(s => s.EndsWith(".jpeg") || s.EndsWith(".jpg") || s.EndsWith(".bmp") || s.EndsWith(".png")));
+                filelist.AddRange(Directory.GetFiles(objFolder, "*.*")
+                    .Where(s => s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
                 if (filelist.Count == 0)
                 {
-                    filelist.AddRange(Directory.GetFiles(folder, "*.*").Where(s => s.EndsWith(".jpeg") || s.EndsWith(".jpg") || s.EndsWith(".bmp") || s.EndsWith(".png")));
+                    filelist.AddRange(Directory.GetFiles(folder, "*.*")
+                        .Where(s => s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                        || s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                        || s.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)
+                        || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
                     if (filelist.Count == 0)
                     {
                         throw new Exception("Not found any images");
@@ -209,7 +217,11 @@ namespace Darknet.Dataset.Merger.ViewModel
             }
             else
             {
-                filelist.AddRange(Directory.GetFiles(folder, "*.*").Where(s => s.EndsWith(".jpeg") || s.EndsWith(".jpg") || s.EndsWith(".bmp") || s.EndsWith(".png")));
+                filelist.AddRange(Directory.GetFiles(folder, "*.*")
+                    .Where(s => s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)
+                    || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase)));
                 if (filelist.Count == 0)
                 {
                     throw new Exception("Not found any images");

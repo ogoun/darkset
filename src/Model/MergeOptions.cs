@@ -9,6 +9,5 @@ namespace Darknet.Dataset.Merger.Model
         public string TargetFolder;
         public IEnumerable<Dataset> Datasets;
         public IEnumerable<ImageClass> Classes;
-        public AugmentationOptions Augmentations;
     }
 }

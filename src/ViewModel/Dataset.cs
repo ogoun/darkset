@@ -22,6 +22,7 @@ namespace Darknet.Dataset.Merger
             set { _datasetPath = value; OnPropertyChanged("DatasetPath"); }
         }
 
+        public AugmentationOptions Augmentations = new AugmentationOptions();
         public IReadOnlyList<string> Classes => _classes;
         public IReadOnlyList<ImageInfo> Images => _images;
         public IReadOnlyCollection<string> TrainImages => _trainImages;
