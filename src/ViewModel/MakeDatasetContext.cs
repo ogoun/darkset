@@ -22,13 +22,15 @@ namespace Darknet.Dataset.Merger.ViewModel
         private ICommand _removeClassCommandCommand;
         private ICommand _removeBoxCommand;
         private ICommand _changeBoxClassCommand;
+        private ICommand _generateCommand;
 
         public ICommand AppendClassCommand => _appendClassCommand;
         public ICommand SetDefaultClassCommand => _setDefaultClassCommand;
         public ICommand RemoveClassCommandCommand => _removeClassCommandCommand;
         public ICommand RemoveBoxCommand => _removeBoxCommand;
         public ICommand ChangeBoxClassCommand => _changeBoxClassCommand;
-
+        public ICommand GenerateCommand => _generateCommand;
+        
 
         private void AppendClass(object state)
         {
@@ -112,6 +114,41 @@ namespace Darknet.Dataset.Merger.ViewModel
                 UpdateBBoxes();
             }
         }
+
+        public void Generate(object state)
+        {
+            // Store sets
+            int test_step = 10;
+            var trainData = new StringBuilder();
+            var testData = new StringBuilder();
+            for (int i = 0; i < _images.Count; i++)
+            {
+                if (i != 0 && i % test_step == 0)
+                {
+                    testData.Append(_images[i].FilePath);
+                    testData.Append("\n");
+                }
+                else
+                {
+                    trainData.Append(_images[i].FilePath);
+                    trainData.Append("\n");
+                }
+            }
+            File.WriteAllText(Path.Combine(_rootFolder, "train.txt"), trainData.ToString());
+            File.WriteAllText(Path.Combine(_rootFolder, "test.txt"), testData.ToString());
+            // Store data
+            var dataInfo = new StringBuilder();
+            dataInfo.Append($"classes= {_classes.Count}");
+            dataInfo.Append("\n");
+            dataInfo.Append($"train= {Path.Combine(_rootFolder, "train.txt")}");
+            dataInfo.Append("\n");
+            dataInfo.Append($"valid= {Path.Combine(_rootFolder, "test.txt")}");
+            dataInfo.Append("\n");
+            dataInfo.Append($"names= {Path.Combine(_rootFolder, "obj.names")}");
+            dataInfo.Append("\n");
+            dataInfo.Append($"backup= backup/");
+            File.WriteAllText(Path.Combine(_rootFolder, "obj.data"), dataInfo.ToString());
+        }
         #endregion
 
         #region Storage
@@ -160,6 +197,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             _removeClassCommandCommand = new RelayCommand(_ => true, RemoveClass);
             _removeBoxCommand = new RelayCommand(_ => true, RemoveBox);
             _changeBoxClassCommand = new RelayCommand(_ => true, ChangeBoxClass);
+            _generateCommand = new RelayCommand(_ => true, Generate);
         }
 
         public void SetFolder(string folder)
