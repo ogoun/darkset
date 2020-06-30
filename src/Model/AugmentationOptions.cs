@@ -5,15 +5,15 @@
         public bool Grayscale { get; set; } = true;
         public bool Brightness { get; set; } = true;
         public bool Contrast { get; set; } = true;
-        public bool RGBDiffs { get; set; } = true;
+        public bool Moonlight { get; set; } = true;
 
         public bool Rotation { get; set; } = true;
         public bool Mirrors { get; set; } = true;
         public bool Stretching { get; set; } = true;
         public bool Shifts { get; set; } = true;
 
-        public bool Invert { get; set; } = true;
-        public bool Gotham { get; set; } = true;
+        public bool Noise { get; set; } = true;
+        public bool Charcoal { get; set; } = true;
         public bool Sepia { get; set; } = true;
         public bool Blur { get; set; } = true;
 

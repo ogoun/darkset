@@ -60,12 +60,12 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool RGBDiffs
+        public bool Moonlight
         {
-            get { return _selectedDataset?.Augmentations?.RGBDiffs ?? false; }
+            get { return _selectedDataset?.Augmentations?.Moonlight ?? false; }
             set
             {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.RGBDiffs = value; OnPropertyChanged("RGBDiffs"); }
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Moonlight = value; OnPropertyChanged("Moonlight"); }
             }
         }
 
@@ -105,19 +105,19 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool Invert
+        public bool Noise
         {
-            get { return _selectedDataset?.Augmentations?.Invert ?? false; }
+            get { return _selectedDataset?.Augmentations?.Noise ?? false; }
             set
             {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Invert = value; OnPropertyChanged("Invert"); }
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Noise = value; OnPropertyChanged("Noise"); }
             }
         }
 
-        public bool Gotham
+        public bool Charcoal
         {
-            get { return _selectedDataset?.Augmentations?.Gotham ?? false; }
-            set { _selectedDataset.Augmentations.Gotham = value; OnPropertyChanged("Gotham"); }
+            get { return _selectedDataset?.Augmentations?.Charcoal ?? false; }
+            set { _selectedDataset.Augmentations.Charcoal = value; OnPropertyChanged("Charcoal"); }
         }
 
         public bool Sepia
@@ -336,13 +336,13 @@ namespace Darknet.Dataset.Merger
             OnPropertyChanged("Grayscale");
             OnPropertyChanged("Brightness");
             OnPropertyChanged("Contrast");
-            OnPropertyChanged("RGBDiffs");
+            OnPropertyChanged("Moonlight");
             OnPropertyChanged("Rotation");
             OnPropertyChanged("Mirrors");
             OnPropertyChanged("Stretching");
             OnPropertyChanged("Shifts");
-            OnPropertyChanged("Invert");
-            OnPropertyChanged("Gotham");
+            OnPropertyChanged("Noise");
+            OnPropertyChanged("Charcoal");
             OnPropertyChanged("Sepia");
             OnPropertyChanged("Blur");
             OnPropertyChanged("BBoxRotation");

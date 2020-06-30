@@ -18,7 +18,6 @@ namespace Darknet.Dataset.Merger.Services
             if (PrepareAugFolder(options.TargetFolder) == false) return;
 
             var objFolder = Path.Combine(options.TargetFolder, "obj");
-            var augFolder = Path.Combine(objFolder, "aug");
 
             var files = new List<string>();            
             var counter = 0;
@@ -44,7 +43,7 @@ namespace Darknet.Dataset.Merger.Services
                 }
             }
 
-            var augmentationContext = new AugmentationContext(counter, augFolder, files)
+            var augmentationContext = new AugmentationContext(counter, objFolder, files)
             {
                 Classes = classes,
                 WithoutClass = options.WithoutClass
@@ -75,11 +74,13 @@ namespace Darknet.Dataset.Merger.Services
                         }
                     }
                     // Copy image
+                    /*
                     var newImagePath = Path.Combine(objFolder, counter.ToString("D6") + ".jpg");
                     File.Copy(imagePath, newImagePath);
                     files.Add(newImagePath);
                     File.WriteAllText(Path.Combine(objFolder, counter.ToString("D6") + ".txt"), sb.ToString());
                     counter++;
+                    */
                     counter = Augmentator.Augmentate(image, augmentationContext, dataset.Augmentations);                    
                     progress(image_progress);
                     image_progress++;
