@@ -187,6 +187,120 @@ namespace Darknet.Dataset.Merger.Services
         {
             _current.SepiaTone();
         }
+
+        public void MirrorBoxes(IEnumerable<Rectangle> boxes)
+        {
+            int i = 0;
+            foreach (var box in boxes)
+            {
+                var rect = new MagickGeometry(box.X, box.Y, box.Width, box.Height);
+                rect.IgnoreAspectRatio = true;
+                var crop_clone = _current.Clone();
+                crop_clone.Crop(rect);
+                if (i % 2 == 0)
+                {
+                    crop_clone.Flop();
+                }
+                else
+                {
+                    crop_clone.Flip();
+                }
+                _current.Composite(crop_clone, box.X, box.Y, CompositeOperator.Over);
+            }
+        }
+
+        public void StretchBoxes(IEnumerable<Rectangle> boxes)
+        {
+            int i = 0;
+            foreach (var box in boxes)
+            {
+                var rect = new MagickGeometry(box.X, box.Y, box.Width, box.Height);
+                rect.IgnoreAspectRatio = true;
+                var crop_clone = _current.Clone();
+                crop_clone.Crop(rect);
+                var Xr = box.X;
+                var Yr = box.Y;
+                if (i % 3 == 0)
+                {
+                    Xr -= box.Width / 2;
+                    crop_clone.Resize(box.Width * 2, box.Height);
+                }
+                else if (i % 3 == 1)
+                {
+                    Yr -= box.Height / 2;
+                    crop_clone.Resize(box.Width, box.Height * 2);
+                }
+                else
+                {
+                    Xr -= box.Width / 2;
+                    Yr -= box.Height / 2;
+                    crop_clone.Resize(box.Width * 2, box.Height * 2);
+                }
+                _current.Composite(crop_clone, Xr, Yr, CompositeOperator.Over);
+            }
+        }
+
+        public void RotateBoxes(IEnumerable<Rectangle> boxes)
+        {
+            foreach (var box in boxes)
+            {
+                var rect = new MagickGeometry(box.X, box.Y, box.Width, box.Height);
+                rect.IgnoreAspectRatio = true;
+                var crop_clone = _current.Clone();
+                crop_clone.Crop(rect);
+                crop_clone.Rotate(90);
+                var Xr = box.X + (box.Width - box.Height) / 2;
+                var Yr = box.Y + (box.Height - box.Width) / 2;
+                _current.Composite(crop_clone, Xr, Yr, CompositeOperator.Over);
+            }
+        }
+        #endregion
+
+        #region Helpers
+        /*public Tensor<float> ToTensor()
+        {
+            Tensor<float> imageData = new DenseTensor<float>(new[] { 1, Width, Height, 3 });
+            using (var pixels = _current.GetPixelsUnsafe())
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int y = 0; y < Height; y++)
+                    {
+                        var color = pixels[x, y].ToColor().ToByteArray();
+                        imageData[0, x, y, 0] = (float)color[0] / 255.0f;
+                        imageData[0, x, y, 1] = (float)color[1] / 255.0f;
+                        imageData[0, x, y, 2] = (float)color[2] / 255.0f;
+                    }
+                }
+
+            }
+            return imageData;
+        }*/
+
+        public IEnumerable<Tuple<AImage, Rectangle>> Crop(int cut_width, int cut_height, bool overlap)
+        {
+            var xs = overlap ? (int)(cut_width * .8f) : cut_width;
+            var ys = overlap ? (int)(cut_height * .8f) : cut_height;
+            for (var x = 0; x < this._current.Width - xs; x += xs)
+            {
+                var startx = x;
+                var dx = (x + cut_width) - this._current.Width;
+                if (dx > 0)
+                {
+                    startx -= dx;
+                }
+                for (var y = 0; y < this._current.Height - ys; y += ys)
+                {
+                    var starty = y;
+                    var dy = (y + cut_height) - this._current.Height;
+                    if (dy > 0)
+                    {
+                        starty -= dy;
+                    }
+                    yield return Tuple.Create(this.Crop(startx, starty, cut_width, cut_height), new Rectangle(startx, starty, cut_width, cut_height));
+                }
+            }
+        }
         #endregion
     }
 
@@ -337,7 +451,7 @@ namespace Darknet.Dataset.Merger.Services
              */
             if (options.BBoxMirrors)
             {
-                foreach (var a in localContext.Image.Annotations)
+                factory.MirrorBoxes(localContext.Image.Annotations.Select(a =>
                 {
                     var bbox_cx = a.Cx * factory.Width;
                     var bbox_cy = a.Cy * factory.Height;
@@ -345,24 +459,45 @@ namespace Darknet.Dataset.Merger.Services
                     var bbox_h = a.Height * factory.Height;
                     var bbox_x = bbox_cx - bbox_w / 2.0f;
                     var bbox_y = bbox_cy - bbox_h / 2.0f;
-                    var rect = new Rectangle((int)bbox_x, (int)bbox_y, (int)bbox_w, (int)bbox_h);
-
-                    /*using (var box = crop(imageFactory, rect))
-                    {
-                        box.Flip(Environment.TickCount % 2 == 0);
-                        imageFactory.Overlay(new ImageProcessor.Imaging.ImageLayer() { Image = box.Image, Position = new Point((int)bbox_x, (int)bbox_y), Size = new Size((int)bbox_w, (int)bbox_h), Opacity = 0 });
-                    }*/
-                }
-                //store(imageFactory, localContext.SourceAnnotationText);
+                    return new Rectangle((int)bbox_x, (int)bbox_y, (int)bbox_w, (int)bbox_h);
+                }).ToArray());
+                store(factory, localContext.SourceAnnotationText);
+                factory.Reset();
             }
             if (options.BBoxRotation)
-            { 
+            {
+                factory.RotateBoxes(localContext.Image.Annotations.Select(a =>
+                {
+                    var bbox_cx = a.Cx * factory.Width;
+                    var bbox_cy = a.Cy * factory.Height;
+                    var bbox_w = a.Width * factory.Width;
+                    var bbox_h = a.Height * factory.Height;
+                    var bbox_x = bbox_cx - bbox_w / 2.0f;
+                    var bbox_y = bbox_cy - bbox_h / 2.0f;
+                    (a.Width, a.Height) = (a.Height, a.Width);
+                    return new Rectangle((int)bbox_x, (int)bbox_y, (int)bbox_w, (int)bbox_h);
+                }).ToArray());
+                store(factory, localContext.SourceAnnotationText);
+                factory.Reset();
             }
             if (options.BBoxShifts)
-            { 
+            {
+
             }
             if (options.BBoxStretching)
-            { 
+            {
+                factory.StretchBoxes(localContext.Image.Annotations.Select(a =>
+                {
+                    var bbox_cx = a.Cx * factory.Width;
+                    var bbox_cy = a.Cy * factory.Height;
+                    var bbox_w = a.Width * factory.Width;
+                    var bbox_h = a.Height * factory.Height;
+                    var bbox_x = bbox_cx - bbox_w / 2.0f;
+                    var bbox_y = bbox_cy - bbox_h / 2.0f;
+                    return new Rectangle((int)bbox_x, (int)bbox_y, (int)bbox_w, (int)bbox_h);
+                }).ToArray());
+                store(factory, localContext.SourceAnnotationText);
+                factory.Reset();
             }
         }
     }
