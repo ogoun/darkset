@@ -147,12 +147,12 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool BBoxShifts
+        public bool BBoxBlur
         {
-            get { return _selectedDataset?.Augmentations?.BBoxShifts ?? false; }
+            get { return _selectedDataset?.Augmentations?.BBoxBlur ?? false; }
             set
             {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxShifts = value; OnPropertyChanged("BBoxShifts"); }
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxBlur = value; OnPropertyChanged("BBoxBlur"); }
             }
         }
 
@@ -346,7 +346,7 @@ namespace Darknet.Dataset.Merger
             OnPropertyChanged("Sepia");
             OnPropertyChanged("Blur");
             OnPropertyChanged("BBoxRotation");
-            OnPropertyChanged("BBoxShifts");
+            OnPropertyChanged("BBoxBlur");
             OnPropertyChanged("BBoxStretching");
             OnPropertyChanged("BBoxMirrors");
             OnPropertyChanged("Cut");

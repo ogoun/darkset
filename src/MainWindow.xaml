@@ -121,9 +121,9 @@
                 <CheckBox Content="Sepia" IsChecked="{Binding Sepia}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2"/>
                 <CheckBox Content="Blur" IsChecked="{Binding Blur}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"/>
 
-                <CheckBox Content="BBox rotation" IsChecked="{Binding BBoxRotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="0"/>
-                <CheckBox Content="BBox shifts" IsChecked="{Binding BBoxShifts}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
-                <CheckBox Content="BBox stretching" IsChecked="{Binding BBoxStretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions"  Content="BBox rotation" IsChecked="{Binding BBoxRotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="0"/>
+                <CheckBox Content="BBox blur" IsChecked="{Binding BBoxBlur}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
+                <CheckBox IsEnabled="False" ToolTip="In next versions"  Content="BBox stretching" IsChecked="{Binding BBoxStretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
                 <CheckBox Content="BBox mirrors" IsChecked="{Binding BBoxMirrors}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="3"/>
             </Grid>
         </GroupBox>

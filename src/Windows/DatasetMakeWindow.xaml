@@ -61,7 +61,7 @@
             <Button Content="Generate" Command="{Binding GenerateCommand}" HorizontalAlignment="Stretch" Margin="2" Grid.Row="12" VerticalAlignment="Stretch" Foreground="#FF1C8105"/>
         </Grid>
         <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Gray" Grid.Column="1">
-            <local:ExtImage Source="{Binding ViewImage}" SelectedImage="{Binding SelectedImage}"/>
+            <local:ExtImage Stretch="Uniform" Source="{Binding ViewImage}" SelectedImage="{Binding SelectedImage}"/>
         </local:ZoomBorder>
     </Grid>
 </Window>

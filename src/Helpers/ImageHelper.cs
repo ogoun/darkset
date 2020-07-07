@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -161,6 +162,20 @@ namespace Darknet.Dataset.Merger.Helpers
             }
 
             throw new ArgumentException(errorMessage);
+        }
+
+        public static Bitmap ToARGBBitmap(this Bitmap bmp)
+        {
+            if (bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb) return bmp;
+            using (bmp)
+            {
+                var result = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                using (var g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+                }
+                return result;
+            }
         }
     }
 }

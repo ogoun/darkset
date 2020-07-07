@@ -73,6 +73,9 @@
     <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
       <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
     </Reference>
+    <Reference Include="ZeroLevel, Version=3.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\ZeroLevel.3.3.4\lib\netstandard2.0\ZeroLevel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -81,13 +84,16 @@
     </ApplicationDefinition>
     <Compile Include="Convertors\BaseConvertor.cs" />
     <Compile Include="Convertors\ImageStatusConvertor.cs" />
+    <Compile Include="MoreLINQ.cs" />
+    <Compile Include="Services\Augmentations\AImage.cs" />
+    <Compile Include="Services\Augmentations\BBOXES.cs" />
+    <Compile Include="Services\Augmentations\LocalAnnotationContext.cs" />
     <Compile Include="Windows\ClassSelectionWindow.xaml.cs">
       <DependentUpon>ClassSelectionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ExtImage.cs" />
     <Compile Include="Model\KeyMode.cs" />
     <Compile Include="Services\BitmapSourceHelper.cs" />
-    <Compile Include="Services\FastBitmap.cs" />
     <Compile Include="ViewModel\DatasetViewerContext.cs" />
     <Compile Include="ViewModel\MakeDatasetContext.cs" />
     <Compile Include="Windows\DatasetMakeWindow.xaml.cs">
@@ -111,7 +117,7 @@
     <Compile Include="Model\AugmentationOptions.cs" />
     <Compile Include="Model\ImageFragment.cs" />
     <Compile Include="Model\MergeOptions.cs" />
-    <Compile Include="Services\Augmentator.cs" />
+    <Compile Include="Services\Augmentations\Augmentator.cs" />
     <Compile Include="Services\DatasetMerger.cs" />
     <Compile Include="ViewModel\Dataset.cs" />
     <Compile Include="Model\ImageInfo.cs" />
@@ -155,6 +161,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />

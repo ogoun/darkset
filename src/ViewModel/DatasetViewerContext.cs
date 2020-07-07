@@ -29,7 +29,7 @@ namespace Darknet.Dataset.Merger.ViewModel
 
         public void SetCurrentImage(ImageInfo image)
         {
-            using (var bmp = new Bitmap(image.FilePath))
+            using (var bmp = new Bitmap(image.FilePath).ToARGBBitmap())
             {
                 using (var g = Graphics.FromImage(bmp))
                 {

@@ -130,6 +130,16 @@ namespace Darknet.Dataset.Merger.Windows
                     this.Cursor = Cursors.Pen;
                     child.CaptureMouse();
                 }
+                else if (_keyMode == KeyMode.Shift)
+                {
+                    (this.Child as ExtImage)?.ChangeClass(e.GetPosition(this.Child));
+                    OnBBoxesChanged.Invoke();
+                }
+                else if (_keyMode == KeyMode.Alt)
+                {
+                    (this.Child as ExtImage)?.RemoveBBox(e.GetPosition(this.Child));
+                    OnBBoxesChanged.Invoke();
+                }
                 else
                 {
                     var tt = GetTranslateTransform(child);
@@ -152,6 +162,14 @@ namespace Darknet.Dataset.Merger.Windows
                     OnBBoxesChanged.Invoke();
                     child.ReleaseMouseCapture();
                     this.Cursor = Cursors.Arrow;
+                }
+                else if (_keyMode == KeyMode.Shift)
+                {
+
+                }
+                else if (_keyMode == KeyMode.Alt)
+                {
+
                 }
                 else
                 {

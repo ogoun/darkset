@@ -1,9 +1,11 @@
 ﻿using Darknet.Dataset.Merger.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ZeroLevel;
 
 namespace Darknet.Dataset.Merger.Windows
 {
@@ -41,7 +43,6 @@ namespace Darknet.Dataset.Merger.Windows
             _selectedImage = e.NewValue as ImageInfo;
         }
 
-
         public ExtImage() : base()
         {
             _fillPen = new Pen(new SolidColorBrush(Color.FromRgb(200, 10, 20)), 2);
@@ -64,6 +65,51 @@ namespace Darknet.Dataset.Merger.Windows
             _bboxEndPoint = point;
         }
 
+        public void RemoveBBox(Point? point)
+        {
+            if (point.HasValue)
+            {
+                var px = (float)((float)point.Value.X / ActualWidth);
+                var py = (float)((float)point.Value.Y / ActualHeight);
+                var to_remove = new List<Annotation>();
+                foreach (var a in _selectedImage.Annotations)
+                {
+                    if (px > a.Left && px < a.Right
+                        && py > a.Top && py < a.Bottom)
+                    {
+                        to_remove.Add(a);
+                    }
+                }
+                foreach (var a in to_remove)
+                {
+                    _selectedImage.RemoveAnnotations(a);
+                }
+            }
+        }
+
+        public void ChangeClass(Point? point)
+        {
+            if (point.HasValue)
+            {
+                var classes = Injector.Default.Get<List<string>>("classes");
+                var px = (float)((float)point.Value.X / ActualWidth);
+                var py = (float)((float)point.Value.Y / ActualHeight);
+                foreach (var a in _selectedImage.Annotations)
+                {
+                    if (px > a.Left && px < a.Right
+                        && py > a.Top && py < a.Bottom)
+                    {
+                        var sw = new ClassSelectionWindow(classes);
+                        if (sw.ShowDialog() == true)
+                        {
+                            a.Label = sw.SelectedClass;
+                            a.Class = classes.IndexOf(a.Label);
+                        }
+                    }
+                }
+            }
+        }
+
         public void ResetBorderPoints()
         {
             GetBBox();
@@ -79,15 +125,15 @@ namespace Darknet.Dataset.Merger.Windows
         {
             if (_bboxStartPoint != null && _bboxEndPoint != null && _selectedImage != null)
             {
-                var left = Math.Min(_bboxStartPoint.Value.X, _bboxEndPoint.Value.X);
-                var right = Math.Max(_bboxStartPoint.Value.X, _bboxEndPoint.Value.X);
-                var top = Math.Min(_bboxStartPoint.Value.Y, _bboxEndPoint.Value.Y);
-                var bottom = Math.Max(_bboxStartPoint.Value.Y, _bboxEndPoint.Value.Y);
+                var left = Math.Min((float)_bboxStartPoint.Value.X, (float)_bboxEndPoint.Value.X);
+                var right = Math.Max((float)_bboxStartPoint.Value.X, (float)_bboxEndPoint.Value.X);
+                var top = Math.Min((float)_bboxStartPoint.Value.Y, (float)_bboxEndPoint.Value.Y);
+                var bottom = Math.Max((float)_bboxStartPoint.Value.Y, (float)_bboxEndPoint.Value.Y);
 
                 if (left < 0) left = 0;
-                if (right > ActualWidth) right = ActualWidth;
-                if (top < 0 ) top = 0;
-                if (bottom > ActualHeight) bottom = ActualHeight;
+                if (right > ActualWidth) right = (float)ActualWidth;
+                if (top < 0) top = 0;
+                if (bottom > ActualHeight) bottom = (float)ActualHeight;
 
                 var width = right - left;
                 var height = bottom - top;

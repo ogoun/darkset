@@ -99,18 +99,19 @@ namespace Darknet.Dataset.Merger.Windows
 
         private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftAlt ||
-                e.Key == Key.RightAlt)
+            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
+            if (key == Key.LeftAlt ||
+                key == Key.RightAlt)
             {
                 _keyMode &= ~KeyMode.Alt;
             }
-            if (e.Key == Key.LeftShift ||
-                e.Key == Key.RightShift)
+            if (key == Key.LeftShift ||
+                key == Key.RightShift)
             {
                 _keyMode &= ~KeyMode.Shift;
             }
-            if (e.Key == Key.LeftCtrl ||
-                e.Key == Key.RightCtrl)
+            if (key == Key.LeftCtrl ||
+                key == Key.RightCtrl)
             {
                 _keyMode &= ~KeyMode.Ctrl;
             }
@@ -119,18 +120,19 @@ namespace Darknet.Dataset.Merger.Windows
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftAlt ||
-                 e.Key == Key.RightAlt)
+            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
+            if (key == Key.LeftAlt ||
+                 key == Key.RightAlt)
             {
                 _keyMode |= KeyMode.Alt;
             }
-            if (e.Key == Key.LeftShift ||
-                e.Key == Key.RightShift)
+            if (key == Key.LeftShift ||
+                key == Key.RightShift)
             {
                 _keyMode |= KeyMode.Shift;
             }
-            if (e.Key == Key.LeftCtrl ||
-                e.Key == Key.RightCtrl)
+            if (key == Key.LeftCtrl ||
+                key == Key.RightCtrl)
             {
                 _keyMode |= KeyMode.Ctrl;
             }

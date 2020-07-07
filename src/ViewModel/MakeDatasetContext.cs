@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using System.Windows.Media;
+using ZeroLevel;
 
 namespace Darknet.Dataset.Merger.ViewModel
 {
@@ -43,7 +44,7 @@ namespace Darknet.Dataset.Merger.ViewModel
                     SaveClasses();
                     OnPropertyChanged("Classes");
                 }
-            }
+            }            
         }
 
         private void SetDefaultClass(object state)
@@ -123,6 +124,11 @@ namespace Darknet.Dataset.Merger.ViewModel
             var testData = new StringBuilder();
             for (int i = 0; i < _images.Count; i++)
             {
+                var lp = Path.Combine(Path.GetDirectoryName(_images[i].FilePath), Path.GetFileNameWithoutExtension(_images[i].FilePath) + ".txt");
+                if (!File.Exists(lp))
+                {
+                    File.WriteAllText(lp, string.Empty);
+                }
                 if (i != 0 && i % test_step == 0)
                 {
                     testData.Append(_images[i].FilePath);
@@ -155,6 +161,7 @@ namespace Darknet.Dataset.Merger.ViewModel
         private void SaveClasses()
         {
             File.WriteAllLines(Path.Combine(_rootFolder, "obj.names"), _classes);
+            Injector.Default.SaveOrUpdate("classes", _classes.ToList());            
         }
 
         private void LoadClasses()
@@ -167,6 +174,7 @@ namespace Darknet.Dataset.Merger.ViewModel
                     _classes.Add(cn);
                 OnPropertyChanged("Classes");
             }
+            Injector.Default.SaveOrUpdate("classes", _classes.ToList());
         }
         #endregion
 
@@ -212,6 +220,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             if (_currentImage != null)
             {
                 var sb = new StringBuilder();
+                var to_remove = new List<Annotation>();
                 foreach (var a in _currentImage.Annotations)
                 {
                     if (string.IsNullOrWhiteSpace(a.Label))
@@ -229,11 +238,20 @@ namespace Darknet.Dataset.Merger.ViewModel
                                 a.Label = sw.SelectedClass;
                                 a.Class = _classes.IndexOf(a.Label);
                             }
+                            else
+                            {
+                                to_remove.Add(a);
+                                continue;
+                            }
                         }
                     }
                     _bboxes.Add(a);
                     sb.Append($"{a.Class} {a.Cx.ConvertToString()} {a.Cy.ConvertToString()} {a.Width.ConvertToString()} {a.Height.ConvertToString()}");
                     sb.Append("\n");
+                }
+                foreach (var a in to_remove)
+                {
+                    _currentImage.RemoveAnnotations(a);
                 }
                 var lp = Path.Combine(Path.GetDirectoryName(_currentImage.FilePath), Path.GetFileNameWithoutExtension(_currentImage.FilePath) + ".txt");
                 File.WriteAllText(lp, sb.ToString());
@@ -246,7 +264,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             SelectedImage = image;
             if (image != null)
             {
-                using (var bmp = new Bitmap(image.FilePath))
+                using (var bmp = new Bitmap(image.FilePath).ToARGBBitmap())
                 {
                     ViewImage = BitmapSourceHelper.LoadBitmap(bmp);
                 }
