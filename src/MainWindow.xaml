@@ -106,25 +106,14 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-                <CheckBox Content="Brightness" IsChecked="{Binding Brightness}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
-                <CheckBox Content="Contrast" IsChecked="{Binding Contrast}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
-                <CheckBox Content="Moonlight" IsChecked="{Binding Moonlight}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
-
-                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Rotation" IsChecked="{Binding Rotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"/>
-                <CheckBox Content="Mirrors" IsChecked="{Binding Mirrors}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
-                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Stretching" IsChecked="{Binding Stretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
-                <CheckBox IsEnabled="False" ToolTip="In next versions" Content="Shifts" IsChecked="{Binding Shifts}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3"/>
-
-                <CheckBox Content="Noise" IsChecked="{Binding Noise}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
-                <CheckBox Content="Charcoal" IsChecked="{Binding Charcoal}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
-                <CheckBox Content="Sepia" IsChecked="{Binding Sepia}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2"/>
-                <CheckBox Content="Blur" IsChecked="{Binding Blur}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"/>
-
-                <CheckBox IsEnabled="False" ToolTip="In next versions"  Content="BBox rotation" IsChecked="{Binding BBoxRotation}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="0"/>
-                <CheckBox Content="BBox blur" IsChecked="{Binding BBoxBlur}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
-                <CheckBox IsEnabled="False" ToolTip="In next versions"  Content="BBox stretching" IsChecked="{Binding BBoxStretching}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
-                <CheckBox Content="BBox mirrors" IsChecked="{Binding BBoxMirrors}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="3"/>
+                <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="15 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                <CheckBox Content="Moonlight" IsChecked="{Binding Moonlight}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+                <CheckBox Content="Mirrors" IsChecked="{Binding Mirrors}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+                <CheckBox Content="Noise" IsChecked="{Binding Noise}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+                <CheckBox Content="Sepia" IsChecked="{Binding Sepia}" Margin="15,0,0,06" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
+                <CheckBox Content="Blur" IsChecked="{Binding Blur}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
+                <CheckBox Content="BBox blur" IsChecked="{Binding BBoxBlur}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
+                <CheckBox Content="Charcoal" IsChecked="{Binding Charcoal}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2"/>
             </Grid>
         </GroupBox>
         <Grid HorizontalAlignment="Stretch" Grid.Row="8" VerticalAlignment="Stretch">

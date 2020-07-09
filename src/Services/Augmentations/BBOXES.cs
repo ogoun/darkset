@@ -33,7 +33,7 @@ namespace Darknet.Dataset.Merger.Services
         }
 
         private readonly List<bbox> _bboxes;
-        private readonly float[] _iou;
+        //private readonly float[] _iou;
         private readonly float _width;
         private readonly float _height;
 
@@ -61,7 +61,7 @@ namespace Darknet.Dataset.Merger.Services
                     RBy = (a.Cy - a.Height / 2.0f) * _height
                 });
             }
-            _iou = new float[_bboxes.Count];
+            /*_iou = new float[_bboxes.Count];
             for (int i = 0; i < _bboxes.Count - 1; i++)
             {
                 for (int j = i + 1; j < _bboxes.Count; j++)
@@ -76,78 +76,10 @@ namespace Darknet.Dataset.Merger.Services
                         _iou[j] = iou;
                     }
                 }
-            }
+            }*/
         }
 
-        private BBOXES(IEnumerable<bbox> boxes, float[] iou, float width, float height)
-        {
-            _iou = iou;
-            _width = width;
-            _height = height;
-            _bboxes = new List<bbox>(boxes);
-        }
         /*
-                /// <summary>
-                /// 90 degree
-                /// </summary>
-                public BBOXES Rotate()
-                {
-                    var bb = new List<bbox>();
-                    for (var i = 0; i < _bboxes.Count; i++)
-                    {
-                        var box = _bboxes[i];
-                        if (_iou[i] < float.Epsilon)
-                        {
-                            var nb = new bbox
-                            {
-                                Class = box.Class,
-                                RBw = box.RBh,
-                                RBh = box.RBw,
-                                RCx = box.RCx,
-                                RCy = box.RCy,
-                                RBx = box.RCx - box.RBh / 2.0f,
-                                RBy = box.RCy - box.RBw / 2.0f
-                            };
-                            BoxRecalculate(_width, _height, ref nb);
-                            bb.Add(nb);
-                        }
-                        else
-                        {
-                            bb.Add(box);
-                        }
-                    }
-                    return new BBOXES(bb, _iou, _width, _height);
-                }
-
-                public BBOXES Stretch(float scaleX, float scaleY)
-                {
-                    var bb = new List<bbox>();
-                    for (var i = 0; i < _bboxes.Count; i++)
-                    {
-                        var box = _bboxes[i];
-                        if (_iou[i] < float.Epsilon)
-                        {
-                            var nb = new bbox
-                            {
-                                Class = box.Class,
-                                RBw = box.RBh * scaleX,
-                                RBh = box.RBw * scaleY,
-                                RCx = box.RCx,
-                                RCy = box.RCy,
-                                RBx = box.RCx - box.RBh / 2.0f,
-                                RBy = box.RCy - box.RBw / 2.0f
-                            };
-                            BoxRecalculate(_width, _height, ref nb);
-                            bb.Add(nb);
-                        }
-                        else
-                        {
-                            bb.Add(box);
-                        }
-                    }
-                    return new BBOXES(bb, _iou, _width, _height);
-                }
-        */
         private static void BoxRecalculate(float width, float height, ref bbox box)
         {
             if (box.RBx < 0)
@@ -196,15 +128,17 @@ namespace Darknet.Dataset.Merger.Services
             var intersectionArea = (float)(width * height);
             return intersectionArea / (float)(box1.RArea + box2.RArea - intersectionArea);
         }
+        */
 
         public IEnumerable<MagickGeometry> ToMagikGeometry()
         {
-            int i = 0;
-            var ignore_rect = new MagickGeometry(-1, -1, -1, -1);
+            //int i = 0;
+            //var ignore_rect = new MagickGeometry(-1, -1, -1, -1);
             foreach (var box in _bboxes)
             {
+                /*
                 if (_iou[i] < float.Epsilon) yield return ignore_rect;
-
+                */
                 var rect = new MagickGeometry((int)box.RBx, (int)box.RBy, (int)box.RBw, (int)box.RBh);
                 rect.IgnoreAspectRatio = true;
                 yield return rect;

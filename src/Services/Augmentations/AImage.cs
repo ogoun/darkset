@@ -19,13 +19,13 @@ namespace Darknet.Dataset.Merger.Services
         public AImage(string filepath)
         {
             _current = new MagickImage(filepath);
-            _source = _current.Clone();
+            _source = new MagickImage(_current.ToByteArray());
         }
 
         public AImage(IMagickImage<ushort> image)
         {
             _current = image;
-            _source = _current.Clone();
+            _source = new MagickImage(_current.ToByteArray());
         }
 
         public void Resize(int width, int height)
@@ -36,13 +36,13 @@ namespace Darknet.Dataset.Merger.Services
         public void Reset()
         {
             _current.Dispose();
-            _current = _source.Clone();
+            _current = new MagickImage(_source.ToByteArray());
         }
 
         public void SaveAsSource()
         {
             _source.Dispose();
-            _source = _current.Clone();
+            _source = new MagickImage(_current.ToByteArray());
         }
 
         public void Write(string filepath)
@@ -61,11 +61,12 @@ namespace Darknet.Dataset.Merger.Services
 
         public AImage Clone()
         {
-            var ai = _current.Clone();
+            var ai = new MagickImage(_current.ToByteArray());
             return new AImage(ai);
         }
 
-        private const float CROPED_BBOX_AREA_MIN_PART = 0.1f;
+        private const float CROPED_BBOX_AREA_MIN_PART = 0.3f;
+        private const float CROPED_BBOX_AREA_MAX_PART = 0.85f;
         public IEnumerable<Tuple<AImage, List<Annotation>>> Crop(IEnumerable<Annotation> annotations, int cut_width, int cut_height, bool overlap)
         {
             var xs = overlap ? (int)(cut_width * .8f) : cut_width;
@@ -87,6 +88,7 @@ namespace Darknet.Dataset.Merger.Services
                         starty -= dy;
                     }
                     var cropped_annotations = new List<Annotation>();
+                    bool skip_crop_region = false;
                     foreach (var a in annotations)
                     {
                         var bbox_cx = a.Cx * this._current.Width - startx;
@@ -106,7 +108,14 @@ namespace Darknet.Dataset.Merger.Services
                         {
                             var bbox_area = bbox_w * bbox_h;
                             var over_area = width * height;
-                            if ((over_area / bbox_area) > CROPED_BBOX_AREA_MIN_PART)
+                            var oa = (over_area / bbox_area);
+                            if (oa <= CROPED_BBOX_AREA_MIN_PART) continue;
+                            else if (oa > CROPED_BBOX_AREA_MIN_PART && oa < CROPED_BBOX_AREA_MAX_PART)
+                            {
+                                skip_crop_region = true;
+                                break;
+                            }
+                            else
                             {
                                 var acx = left + width / 2.0f;
                                 var acy = top + height / 2.0f;
@@ -123,7 +132,10 @@ namespace Darknet.Dataset.Merger.Services
                             }
                         }
                     }
-                    yield return Tuple.Create(this.Crop(startx, starty, cut_width, cut_height), cropped_annotations);
+                    if (!skip_crop_region)
+                    {
+                        yield return Tuple.Create(this.Crop(startx, starty, cut_width, cut_height), cropped_annotations);
+                    }
                 }
             }
         }
@@ -139,14 +151,6 @@ namespace Darknet.Dataset.Merger.Services
         {
             _current.AdaptiveBlur();
         }
-        public void Brightness()
-        {
-            _current.BrightnessContrast(new Percentage(50), new Percentage(10));
-        }
-        public void Contrast()
-        {
-            _current.Contrast(true);
-        }
         public void Flip()
         {
             _current.Flip();
@@ -159,86 +163,34 @@ namespace Darknet.Dataset.Merger.Services
         {
             _current.Grayscale();
         }
-
         public void Moonlight()
         {
             _current.BlueShift();
         }
-
         public void Noise()
         {
             _current.AddNoise(NoiseType.Laplacian, 2.0);
         }
-
         public void Charcoal()
         {
             _current.Charcoal();
         }
-
         public void SepiaTone()
         {
             _current.SepiaTone();
         }
-
-        public void MirrorBoxes(BBOXES boxes)
-        {
-            int i = 0;
-            foreach (var rect in boxes.ToMagikGeometry())
-            {
-                var crop_clone = _current.Clone();
-                crop_clone.Crop(rect);
-                if (i % 2 == 0)
-                {
-                    crop_clone.Flop();
-                }
-                else
-                {
-                    crop_clone.Flip();
-                }
-                _current.Composite(crop_clone, rect.X, rect.Y, CompositeOperator.Over);
-            }
-        }
-
-        public void StretchBoxes(BBOXES original, BBOXES stretched)
-        {
-            var paired = original.ToMagikGeometry().Zip(stretched.ToMagikGeometry(), (o, s) => Tuple.Create(o, s));
-            foreach (var pair in paired)
-            {
-                if (pair.Item2.X > 0 && pair.Item2.Y > 0 && pair.Item2.Width > 0 && pair.Item2.Height > 0)
-                {
-                    var crop_clone = _current.Clone();
-                    crop_clone.Crop(pair.Item1, Gravity.Forget);
-                    crop_clone.Resize(new Percentage(120), new Percentage(120));
-                    _current.Composite(crop_clone, pair.Item2.X, pair.Item2.Y, CompositeOperator.Over);
-                }
-            }
-        }
-
-        public void RotateBoxes(BBOXES original, BBOXES rotated)
-        {
-            var paired = original.ToMagikGeometry().Zip(rotated.ToMagikGeometry(), (o, s) => Tuple.Create(o, s));
-            foreach (var pair in paired)
-            {
-                if (pair.Item2.X > 0 && pair.Item2.Y > 0 && pair.Item2.Width > 0 && pair.Item2.Height > 0)
-                {
-                    var crop_clone = _current.Clone();
-                    crop_clone.Crop(pair.Item1, Gravity.Forget);
-                    crop_clone.Rotate(90);
-                    _current.Composite(crop_clone, pair.Item2.X, pair.Item2.Y, CompositeOperator.Over);
-                }
-            }
-        }
-
         public void BlurBoxes(BBOXES boxes)
         {
             foreach (var rect in boxes.ToMagikGeometry())
             {
-                if (rect.X > 0 && rect.Y > 0 && rect.Width > 0 && rect.Height > 0)
+                if (rect.X >= 0 && rect.Y >= 0 && rect.Width > 0 && rect.Height > 0)
                 {
-                    var crop_clone = _current.Clone();
-                    crop_clone.Crop(rect);
-                    crop_clone.Blur();
-                    _current.Composite(crop_clone, rect.X, rect.Y, CompositeOperator.Over);
+                    using (var crop_clone = new MagickImage(_current.ToByteArray()))
+                    {
+                        crop_clone.Crop(rect);
+                        crop_clone.Blur();
+                        _current.Composite(crop_clone, rect.X, rect.Y, CompositeOperator.Over);
+                    }
                 }
             }
         }

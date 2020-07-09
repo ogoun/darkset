@@ -114,13 +114,12 @@ namespace Darknet.Dataset.Merger.Services
             });
 
             if (options.Blur) app.Invoke(factory, im => im.Blur);
-            if (options.Brightness) app.Invoke(factory, im => im.Brightness);
-            if (options.Contrast) app.Invoke(factory, im => im.Contrast);
             if (options.Grayscale) app.Invoke(factory, im => im.Grayscale);
             if (options.Moonlight) app.Invoke(factory, im => im.Moonlight);
             if (options.Noise) app.Invoke(factory, im => im.Noise);
-            if (options.Charcoal) app.Invoke(factory, im => im.Charcoal);
             if (options.Sepia) app.Invoke(factory, im => im.SepiaTone);
+            if (options.Charcoal) app.Invoke(factory, im => im.Charcoal);
+            
             if (options.Mirrors)
             {
                 var horizontallAnn = new StringBuilder();
@@ -142,34 +141,12 @@ namespace Darknet.Dataset.Merger.Services
                 store(factory, verticalAnn.ToString());
                 factory.Reset();
             }
-
-
             if (options.BBoxBlur)
             {
                 factory.BlurBoxes(boxes);
                 storeWithBB(factory, boxes);
                 factory.Reset();
             }
-            /*if (options.BBoxMirrors)
-            {
-                factory.MirrorBoxes(boxes);
-                storeWithBB(factory, boxes);
-                factory.Reset();
-            }*/
-            /*if (options.BBoxRotation)
-            {
-                var rotated_boxes = boxes.Rotate();
-                factory.RotateBoxes(boxes, rotated_boxes);
-                storeWithBB(factory, rotated_boxes);
-                factory.Reset();
-            }
-            if (options.BBoxStretching)
-            {
-                var stretched_boxes = boxes.Stretch(1.2f, 1.2f);
-                factory.StretchBoxes(boxes, stretched_boxes);
-                storeWithBB(factory, stretched_boxes);
-                factory.Reset();
-            }*/
         }
     }
 }

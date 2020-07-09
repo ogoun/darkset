@@ -42,39 +42,12 @@ namespace Darknet.Dataset.Merger
             set { if (_selectedDataset != null) { _selectedDataset.Augmentations.Grayscale = value; OnPropertyChanged("Grayscale"); } }
         }
 
-        public bool Brightness
-        {
-            get { return _selectedDataset?.Augmentations?.Brightness ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Brightness = value; OnPropertyChanged("Brightness"); }
-            }
-        }
-
-        public bool Contrast
-        {
-            get { return _selectedDataset?.Augmentations?.Contrast ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Contrast = value; OnPropertyChanged("Contrast"); }
-            }
-        }
-
         public bool Moonlight
         {
             get { return _selectedDataset?.Augmentations?.Moonlight ?? false; }
             set
             {
                 if (_selectedDataset != null) { _selectedDataset.Augmentations.Moonlight = value; OnPropertyChanged("Moonlight"); }
-            }
-        }
-
-        public bool Rotation
-        {
-            get { return _selectedDataset?.Augmentations?.Rotation ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Rotation = value; OnPropertyChanged("Rotation"); }
             }
         }
 
@@ -87,24 +60,6 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool Stretching
-        {
-            get { return _selectedDataset?.Augmentations?.Stretching ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Stretching = value; OnPropertyChanged("Stretching"); }
-            }
-        }
-
-        public bool Shifts
-        {
-            get { return _selectedDataset?.Augmentations?.Shifts ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Shifts = value; OnPropertyChanged("Shifts"); }
-            }
-        }
-
         public bool Noise
         {
             get { return _selectedDataset?.Augmentations?.Noise ?? false; }
@@ -112,12 +67,6 @@ namespace Darknet.Dataset.Merger
             {
                 if (_selectedDataset != null) { _selectedDataset.Augmentations.Noise = value; OnPropertyChanged("Noise"); }
             }
-        }
-
-        public bool Charcoal
-        {
-            get { return _selectedDataset?.Augmentations?.Charcoal ?? false; }
-            set { _selectedDataset.Augmentations.Charcoal = value; OnPropertyChanged("Charcoal"); }
         }
 
         public bool Sepia
@@ -138,15 +87,6 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool BBoxRotation
-        {
-            get { return _selectedDataset?.Augmentations?.BBoxRotation ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxRotation = value; OnPropertyChanged("BBoxRotation"); }
-            }
-        }
-
         public bool BBoxBlur
         {
             get { return _selectedDataset?.Augmentations?.BBoxBlur ?? false; }
@@ -156,21 +96,12 @@ namespace Darknet.Dataset.Merger
             }
         }
 
-        public bool BBoxStretching
+        public bool Charcoal
         {
-            get { return _selectedDataset?.Augmentations?.BBoxStretching ?? false; }
+            get { return _selectedDataset?.Augmentations?.Charcoal ?? false; }
             set
             {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxStretching = value; OnPropertyChanged("BBoxStretching"); }
-            }
-        }
-
-        public bool BBoxMirrors
-        {
-            get { return _selectedDataset?.Augmentations?.BBoxMirrors ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.BBoxMirrors = value; OnPropertyChanged("BBoxMirrors"); }
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Charcoal = value; OnPropertyChanged("Charcoal"); }
             }
         }
 
@@ -329,26 +260,17 @@ namespace Darknet.Dataset.Merger
         public void SelectDataset(Dataset dataset)
         {
             _selectedDataset = dataset;
-
-
+            
             // i know.. i know.. but i so lazy
 
             OnPropertyChanged("Grayscale");
-            OnPropertyChanged("Brightness");
-            OnPropertyChanged("Contrast");
-            OnPropertyChanged("Moonlight");
-            OnPropertyChanged("Rotation");
             OnPropertyChanged("Mirrors");
-            OnPropertyChanged("Stretching");
-            OnPropertyChanged("Shifts");
             OnPropertyChanged("Noise");
-            OnPropertyChanged("Charcoal");
             OnPropertyChanged("Sepia");
+            OnPropertyChanged("Moonlight");
             OnPropertyChanged("Blur");
-            OnPropertyChanged("BBoxRotation");
+            OnPropertyChanged("Charcoal");
             OnPropertyChanged("BBoxBlur");
-            OnPropertyChanged("BBoxStretching");
-            OnPropertyChanged("BBoxMirrors");
             OnPropertyChanged("Cut");
             OnPropertyChanged("OverrideFragments");
             OnPropertyChanged("CutWidth");
