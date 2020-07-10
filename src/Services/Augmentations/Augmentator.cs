@@ -57,7 +57,7 @@ namespace Darknet.Dataset.Merger.Services
 
                     ApplyAugmentations(original, local, context, options);
                 }
-                if (local.Image.Annotations.Any()
+                if ((context.WithoutClass || local.Image.Annotations.Any())
                     && options.Cut
                     && options.CutWidth > 0
                     && options.CutHeight > 0
@@ -74,7 +74,7 @@ namespace Darknet.Dataset.Merger.Services
                                 sbCropped.Append($"{context.Classes[cropped_annotation.Label]} {cropped_annotation.Cx.ConvertToString()} {cropped_annotation.Cy.ConvertToString()} {cropped_annotation.Width.ConvertToString()} {cropped_annotation.Height.ConvertToString()}");
                                 sbCropped.Append("\n");
                             }
-                            if (sbCropped.Length > 0) // no augmentation for empty crops
+                            if (context.WithoutClass ||  sbCropped.Length > 0) // no augmentation for empty crops
                             {
                                 var croppedContext = new LocalAnnotationContext { SourceAnnotationText = sbCropped.ToString(), Image = new ImageInfo(imageInfo.FilePath, imageInfo.TrainType, cropped.Item2) };
                                 using (var croppedAndResized = resize(cropped.Item1))
