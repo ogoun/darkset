@@ -194,6 +194,23 @@ namespace Darknet.Dataset.Merger.Services
                 }
             }
         }
+
+        public void FSin()
+        {
+            float mr = 255.0f / 360.0f;
+            float mul = (float)(Math.PI / 180.0f);
+            var pixels = this._current.GetPixels();
+            for (var i = 0; i < this._current.Height; i++)
+                for (var j = 0; j < this._current.Width; j++)
+                {
+                    var color = pixels[i, j].ToColor();
+                    byte r = (byte)(Math.Sin(mr * color.R * mul) * color.R);
+                    byte g = (byte)(Math.Sin(mr * color.G * mul) * color.G);
+                    byte b = (byte)(Math.Sin(mr * color.B * mul) * color.B);
+                    byte a = (byte)(Math.Sin(mr * color.A * mul) * color.A);
+                    pixels.SetPixel(i, j, new ushort[] { r, g, b, a });
+                }
+        }
         #endregion
 
         #region Helpers

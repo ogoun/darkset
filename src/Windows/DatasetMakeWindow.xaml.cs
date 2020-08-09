@@ -2,6 +2,7 @@
 using Darknet.Dataset.Merger.ViewModel;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -65,7 +66,7 @@ namespace Darknet.Dataset.Merger.Windows
             this.DataContext = new MakeDatasetContext();
             dele = new WinEventDelegate(WinEventProc);
             m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
-        }        
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -149,6 +150,15 @@ namespace Darknet.Dataset.Merger.Windows
             if (e.AddedItems?.Count > 0)
             {
                 border.SetSelectedBBox(e.AddedItems[0] as Annotation);
+            }
+        }
+
+        private void ListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
+            if (key == Key.Delete)
+            {
+                (this.DataContext as MakeDatasetContext).RemoveImageCommand.Execute(null);
             }
         }
     }

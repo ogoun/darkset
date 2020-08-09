@@ -24,6 +24,7 @@ namespace Darknet.Dataset.Merger.ViewModel
         private ICommand _removeBoxCommand;
         private ICommand _changeBoxClassCommand;
         private ICommand _generateCommand;
+        private ICommand _removeImageCommand;
 
         public ICommand AppendClassCommand => _appendClassCommand;
         public ICommand SetDefaultClassCommand => _setDefaultClassCommand;
@@ -31,7 +32,8 @@ namespace Darknet.Dataset.Merger.ViewModel
         public ICommand RemoveBoxCommand => _removeBoxCommand;
         public ICommand ChangeBoxClassCommand => _changeBoxClassCommand;
         public ICommand GenerateCommand => _generateCommand;
-        
+        public ICommand RemoveImageCommand => _removeImageCommand;
+
 
         private void AppendClass(object state)
         {
@@ -44,7 +46,7 @@ namespace Darknet.Dataset.Merger.ViewModel
                     SaveClasses();
                     OnPropertyChanged("Classes");
                 }
-            }            
+            }
         }
 
         private void SetDefaultClass(object state)
@@ -155,13 +157,28 @@ namespace Darknet.Dataset.Merger.ViewModel
             dataInfo.Append($"backup= backup/");
             File.WriteAllText(Path.Combine(_rootFolder, "obj.data"), dataInfo.ToString());
         }
+
+        private void RemoveImage(object state)
+        {
+            if (_currentImage != null)
+            {
+                _images.Remove(_currentImage);
+                File.Delete(_currentImage.FilePath);
+                var lp = Path.Combine(Path.GetDirectoryName(_currentImage.FilePath), Path.GetFileNameWithoutExtension(_currentImage.FilePath) + ".txt");
+                if (File.Exists(lp))
+                {
+                    File.Delete(lp);
+                }
+                _currentImage = null;
+            }
+        }
         #endregion
 
         #region Storage
         private void SaveClasses()
         {
             File.WriteAllLines(Path.Combine(_rootFolder, "obj.names"), _classes);
-            Injector.Default.SaveOrUpdate("classes", _classes.ToList());            
+            Injector.Default.SaveOrUpdate("classes", _classes.ToList());
         }
 
         private void LoadClasses()
@@ -194,6 +211,8 @@ namespace Darknet.Dataset.Merger.ViewModel
         public string ClassTitle { get { return "Classes" + (string.IsNullOrWhiteSpace(_defaultClass) ? string.Empty : $" (default: {_defaultClass})"); } }
         #endregion
 
+
+
         public ImageInfo SelectedImage { get { return _currentImage; } set { _currentImage = value; OnPropertyChanged("SelectedImage"); } }
 
         public ObservableCollection<Annotation> BBoxes { get { return _bboxes; } }
@@ -206,6 +225,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             _removeBoxCommand = new RelayCommand(_ => true, RemoveBox);
             _changeBoxClassCommand = new RelayCommand(_ => true, ChangeBoxClass);
             _generateCommand = new RelayCommand(_ => true, Generate);
+            _removeImageCommand = new RelayCommand(_ => true, RemoveImage);
         }
 
         public void SetFolder(string folder)

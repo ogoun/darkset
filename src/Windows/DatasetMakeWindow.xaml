@@ -13,7 +13,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="210"/>
         </Grid.ColumnDefinitions>
-        <ListBox HorizontalAlignment="Stretch"  ItemsSource="{Binding Images}" VerticalAlignment="Stretch" SelectionChanged="ListBox_SelectionChanged">
+        <ListBox x:Name="lbImages" HorizontalAlignment="Stretch"  ItemsSource="{Binding Images}" VerticalAlignment="Stretch" SelectionChanged="ListBox_SelectionChanged" KeyUp="ListBox_KeyUp">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>
