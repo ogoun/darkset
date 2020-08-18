@@ -241,6 +241,7 @@ namespace Darknet.Dataset.Merger.ViewModel
             {
                 var sb = new StringBuilder();
                 var to_remove = new List<Annotation>();
+                _bboxes.Add(new Annotation { Class = -1, Label = "-- ALL --", Cx = -1, Cy = -1, Width = 0, Height = 0 });
                 foreach (var a in _currentImage.Annotations)
                 {
                     if (string.IsNullOrWhiteSpace(a.Label))
@@ -289,6 +290,7 @@ namespace Darknet.Dataset.Merger.ViewModel
                     ViewImage = BitmapSourceHelper.LoadBitmap(bmp);
                 }
                 _bboxes.Clear();
+                _bboxes.Add(new Annotation { Class = -1, Label = "-- ALL --", Cx = -1, Cy = -1, Width = 0, Height = 0 });
                 foreach (var a in image.Annotations)
                 {
                     _bboxes.Add(a);

@@ -149,7 +149,15 @@ namespace Darknet.Dataset.Merger.Windows
         {
             if (e.AddedItems?.Count > 0)
             {
-                border.SetSelectedBBox(e.AddedItems[0] as Annotation);
+                var a = e.AddedItems[0] as Annotation;
+                if (a.Width > 0 && a.Height > 0)
+                {
+                    border.SetSelectedBBox(a);
+                }
+                else
+                {
+                    border.SetSelectedBBox(null);
+                }
             }
         }
 

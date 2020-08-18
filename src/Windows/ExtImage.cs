@@ -18,6 +18,10 @@ namespace Darknet.Dataset.Merger.Windows
         private readonly Pen _bboxPen;
         private readonly Pen _selectedBboxPen;
 
+        private readonly Pen _bboxPen1;
+        private readonly Pen _bboxPen2;
+        private readonly Pen _bboxPen3;
+
         private ImageInfo _selectedImage;
         private Annotation _selectedBbox;
 
@@ -48,10 +52,17 @@ namespace Darknet.Dataset.Merger.Windows
             _fillPen = new Pen(new SolidColorBrush(Color.FromRgb(200, 10, 20)), 2);
             _fillPen.DashStyle = DashStyles.Dash;
 
-            _bboxPen = new Pen(new SolidColorBrush(Colors.Lime), 2);
+            _bboxPen = new Pen(new SolidColorBrush(Colors.Black), 1);
             _bboxPen.DashStyle = DashStyles.Solid;
+            _bboxPen1 = new Pen(new SolidColorBrush(Colors.White), 1);
+            _bboxPen1.DashStyle = DashStyles.Solid;
 
-            _selectedBboxPen = new Pen(new SolidColorBrush(Colors.Red), 4);
+            _bboxPen2 = new Pen(new SolidColorBrush(Colors.GreenYellow), 1);
+            _bboxPen2.DashStyle = DashStyles.Solid;
+            _bboxPen3 = new Pen(new SolidColorBrush(Colors.Lime), 1);
+            _bboxPen3.DashStyle = DashStyles.Solid;
+
+            _selectedBboxPen = new Pen(new SolidColorBrush(Colors.Red), 3);
             _selectedBboxPen.DashStyle = DashStyles.Solid;
         }
 
@@ -171,21 +182,53 @@ namespace Darknet.Dataset.Merger.Windows
 
             if (_selectedImage != null && _selectedImage.Annotations.Count > 0)
             {
+                if (_selectedBbox != null)
+                {
+                    var left = _selectedBbox.Cx - _selectedBbox.Width / 2.0f;
+                    var top = _selectedBbox.Cy - _selectedBbox.Height / 2.0f;
+                    var r = new Rect(left * ActualWidth - 2, top * ActualHeight - 2, _selectedBbox.Width * ActualWidth + 4, _selectedBbox.Height * ActualHeight + 4);
+                    drawingContext.DrawRectangle(null, _selectedBboxPen, r);
+                }
+                else
+                {
+                    foreach (var bbox in _selectedImage.Annotations)
+                    {
+                        var left = bbox.Cx - bbox.Width / 2.0f;
+                        var top = bbox.Cy - bbox.Height / 2.0f;
+                        var r1 = new Rect(left * ActualWidth, top * ActualHeight, bbox.Width * ActualWidth, bbox.Height * ActualHeight);
+                        var r2 = new Rect(left * ActualWidth - 2, top * ActualHeight - 2, bbox.Width * ActualWidth + 4, bbox.Height * ActualHeight + 4);
+                        var center = new Point(bbox.Cx * ActualWidth, bbox.Cy * ActualHeight);
+                        var max_side = Math.Max(bbox.Width * ActualWidth, bbox.Height * ActualHeight) * 1.4f;
+
+                        //drawingContext.DrawEllipse(null, _bboxPen, center, max_side, max_side);
+                        //drawingContext.DrawEllipse(null, _bboxPen1, center, max_side + .5f, max_side + .5f);
+                        drawingContext.DrawRectangle(null, _bboxPen2, r1);
+                        //drawingContext.DrawRectangle(null, _bboxPen3, r2);
+                    }
+                }
+                /*
                 foreach (var bbox in _selectedImage.Annotations)
                 {
                     var left = bbox.Cx - bbox.Width / 2.0f;
                     var top = bbox.Cy - bbox.Height / 2.0f;
-                    var r = new Rect(left * ActualWidth, top * ActualHeight, bbox.Width * ActualWidth, bbox.Height * ActualHeight);
+                    var r1 = new Rect(left * ActualWidth, top * ActualHeight, bbox.Width * ActualWidth, bbox.Height * ActualHeight);
+                    var r2 = new Rect(left * ActualWidth - 2, top * ActualHeight - 2, bbox.Width * ActualWidth + 4, bbox.Height * ActualHeight + 4);
+                    var center = new Point(bbox.Cx * ActualWidth, bbox.Cy * ActualHeight);
+                    var max_side = Math.Max(bbox.Width * ActualWidth, bbox.Height * ActualHeight) * 1.4f;
 
                     if (Object.ReferenceEquals(bbox, _selectedBbox))
                     {
-                        drawingContext.DrawRectangle(null, _selectedBboxPen, r);
+                        drawingContext.DrawRectangle(null, _selectedBboxPen, r2);
                     }
                     else
                     {
-                        drawingContext.DrawRectangle(null, _bboxPen, r);
+                        drawingContext.DrawEllipse(null, _bboxPen, center, max_side, max_side);
+                        drawingContext.DrawEllipse(null, _bboxPen1, center, max_side + .5f, max_side + .5f);
+
+                        drawingContext.DrawRectangle(null, _bboxPen2, r1);
+                        drawingContext.DrawRectangle(null, _bboxPen3, r2);
                     }
-                }
+                }*/
             }
         }
     }
