@@ -12,6 +12,9 @@
         public bool BBoxBlur { get; set; } = true;
         public bool Charcoal { get; set; } = false;
 
+        public bool LinesNoise { get; set; } = false;
+        public bool Sin { get; set; } = false;
+
         public bool Cut { get; set; } = false;
         public bool CutOverlaps { get; set; } = true;
         public int CutWidth { get; set; } = 1920;

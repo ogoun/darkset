@@ -119,7 +119,9 @@ namespace Darknet.Dataset.Merger.Services
             if (options.Noise) app.Invoke(factory, im => im.Noise);
             if (options.Sepia) app.Invoke(factory, im => im.SepiaTone);
             if (options.Charcoal) app.Invoke(factory, im => im.Charcoal);
-            
+            if (options.LinesNoise) app.Invoke(factory, im => im.LineNoize);
+            if (options.Sin) app.Invoke(factory, im => im.FSin);
+
             if (options.Mirrors)
             {
                 var horizontallAnn = new StringBuilder();

@@ -114,6 +114,9 @@
                 <CheckBox Content="Blur" IsChecked="{Binding Blur}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
                 <CheckBox Content="BBox blur" IsChecked="{Binding BBoxBlur}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="3" Grid.Row="2"/>
                 <CheckBox Content="Charcoal" IsChecked="{Binding Charcoal}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2"/>
+
+                <CheckBox Content="Lines noise" IsChecked="{Binding LinesNoise}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3"/>
+                <CheckBox Content="Sin color transform" IsChecked="{Binding Sin}" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"/>
             </Grid>
         </GroupBox>
         <Grid HorizontalAlignment="Stretch" Grid.Row="8" VerticalAlignment="Stretch">

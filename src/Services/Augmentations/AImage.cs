@@ -195,21 +195,56 @@ namespace Darknet.Dataset.Merger.Services
             }
         }
 
+        public void LineNoize()
+        {
+            var rnd = new Random((int)Environment.TickCount);
+            var count = rnd.Next(6 * Math.Max(_current.Width, _current.Height));
+            for (int i = 0; i < count; i++)
+            {
+                var x1 = rnd.Next(0, _current.Width);
+                var y1 = rnd.Next(0, _current.Height);
+                var x2 = rnd.Next(-25, 25);
+                var y2 = rnd.Next(-25, 25);
+                byte[] rgb = new byte[3];
+                rnd.NextBytes(rgb);
+                DrawableFillColor fillColor = new DrawableFillColor(MagickColor.FromRgb(rgb[0], rgb[1], rgb[2]));
+                DrawableLine dl = new DrawableLine(x1, y1, x1 + x2, y1 + y2);
+                _current.Draw(fillColor, dl);
+            }
+        }
+
         public void FSin()
         {
-            float mr = 255.0f / 360.0f;
-            float mul = (float)(Math.PI / 180.0f);
+            ushort max = 0;
+            var const_multiplier = 2.0f * Math.PI / 255.0f;
             var pixels = this._current.GetPixels();
-            for (var i = 0; i < this._current.Height; i++)
-                for (var j = 0; j < this._current.Width; j++)
+            var channels = pixels.Channels;
+            for (var i = 0; i < this._current.Width; i++)
+            {
+                for (var j = 0; j < this._current.Height; j++)
                 {
-                    var color = pixels[i, j].ToColor();
-                    byte r = (byte)(Math.Sin(mr * color.R * mul) * color.R);
-                    byte g = (byte)(Math.Sin(mr * color.G * mul) * color.G);
-                    byte b = (byte)(Math.Sin(mr * color.B * mul) * color.B);
-                    byte a = (byte)(Math.Sin(mr * color.A * mul) * color.A);
-                    pixels.SetPixel(i, j, new ushort[] { r, g, b, a });
+                    for (var c = 0; c < channels; c++)
+                    {
+                        pixels[i, j][c] = (ushort)((.5f * Math.Sin(const_multiplier * ((double)pixels[i, j][c] / 255.0f)) + .5f) * (double)pixels[i, j][c]);
+                        if (pixels[i, j][c] > max) max = pixels[i, j][c];
+                    }
                 }
+            }
+            if (max < 255 * 255)
+            {
+                var ext = 255.0f * 255.0f / (float)max;
+                for (var i = 0; i < this._current.Width; i++)
+                {
+                    for (var j = 0; j < this._current.Height; j++)
+                    {
+                        for (var c = 0; c < channels; c++)
+                        {
+                            pixels[i, j][c] = (ushort)(pixels[i, j][c] * ext);
+                        }
+                    }
+                }
+            }
+            pixels.SetPixel(pixels);
         }
         #endregion
 

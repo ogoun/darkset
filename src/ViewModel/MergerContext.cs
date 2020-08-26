@@ -123,6 +123,24 @@ namespace Darknet.Dataset.Merger
             }
         }
 
+        public bool LinesNoise
+        {
+            get { return _selectedDataset?.Augmentations?.LinesNoise ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.LinesNoise = value; OnPropertyChanged("LinesNoise"); }
+            }
+        }
+
+        public bool Sin
+        {
+            get { return _selectedDataset?.Augmentations?.Sin ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.Sin = value; OnPropertyChanged("Sin"); }
+            }
+        }
+
         public string CutWidth
         {
             get { return _selectedDataset?.Augmentations?.CutWidth.ToString(); }
