@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
+using ZeroLevel;
 
 namespace Darknet.Dataset.Merger.Services
 {
@@ -19,7 +20,7 @@ namespace Darknet.Dataset.Merger.Services
 
             var objFolder = Path.Combine(options.TargetFolder, "obj");
 
-            var files = new List<string>();            
+            var files = new List<string>();
             var counter = 0;
             var classIndex = 0;
             var classes = new Dictionary<string, int>();
@@ -53,37 +54,36 @@ namespace Darknet.Dataset.Merger.Services
             {
                 foreach (var image in dataset.Images)
                 {
-                    if (options.WithoutClass == false)
+                    try
                     {
-                        if (!image.Annotations.Any(a => classes.ContainsKey(a.Label))) continue;
-                    }
-                    var imagePath = image.FilePath;
-                    if (File.Exists(imagePath) == false)
-                    {
-                        imagePath = Path.Combine(dataset.DatasetPath, "obj", Path.GetFileNameWithoutExtension(image.FilePath));
-                    }
-                    if (File.Exists(imagePath) == false) continue;
-
-                    var sb = new StringBuilder();
-                    foreach (var a in image.Annotations)
-                    {
-                        if (classes.ContainsKey(a.Label))
+                        if (options.WithoutClass == false)
                         {
-                            sb.Append($"{classes[a.Label]} {a.Cx.ConvertToString()} {a.Cy.ConvertToString()} {a.Width.ConvertToString()} {a.Height.ConvertToString()}");
-                            sb.Append("\n");
+                            if (!image.Annotations.Any(a => classes.ContainsKey(a.Label))) continue;
                         }
+                        var imagePath = image.FilePath;
+                        if (File.Exists(imagePath) == false)
+                        {
+                            imagePath = Path.Combine(dataset.DatasetPath, "obj", Path.GetFileNameWithoutExtension(image.FilePath));
+                        }
+                        if (File.Exists(imagePath) == false) continue;
+
+                        var sb = new StringBuilder();
+                        foreach (var a in image.Annotations)
+                        {
+                            if (classes.ContainsKey(a.Label))
+                            {
+                                sb.Append($"{classes[a.Label]} {a.Cx.ConvertToString()} {a.Cy.ConvertToString()} {a.Width.ConvertToString()} {a.Height.ConvertToString()}");
+                                sb.Append("\n");
+                            }
+                        }
+                        counter = Augmentator.Augmentate(image, augmentationContext, dataset.Augmentations);
+                        progress(image_progress);
+                        image_progress++;
                     }
-                    // Copy image
-                    /*
-                    var newImagePath = Path.Combine(objFolder, counter.ToString("D6") + ".jpg");
-                    File.Copy(imagePath, newImagePath);
-                    files.Add(newImagePath);
-                    File.WriteAllText(Path.Combine(objFolder, counter.ToString("D6") + ".txt"), sb.ToString());
-                    counter++;
-                    */
-                    counter = Augmentator.Augmentate(image, augmentationContext, dataset.Augmentations);                    
-                    progress(image_progress);
-                    image_progress++;
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "[DatasetMerger.Merge] Augmentations");
+                    }
                 }
             }
             // Store sets
@@ -120,7 +120,7 @@ namespace Darknet.Dataset.Merger.Services
             File.WriteAllText(Path.Combine(options.TargetFolder, "obj.data"), dataInfo.ToString());
         }
 
-        
+
 
         private static IEnumerable<string> Shuffle(IEnumerable<string> lines)
         {

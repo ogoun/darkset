@@ -71,8 +71,11 @@ namespace Darknet.Dataset.Merger.Services
                             var sbCropped = new StringBuilder();
                             foreach (var cropped_annotation in cropped.Item2)
                             {
-                                sbCropped.Append($"{context.Classes[cropped_annotation.Label]} {cropped_annotation.Cx.ConvertToString()} {cropped_annotation.Cy.ConvertToString()} {cropped_annotation.Width.ConvertToString()} {cropped_annotation.Height.ConvertToString()}");
-                                sbCropped.Append("\n");
+                                if (context.Classes.ContainsKey(cropped_annotation.Label))
+                                {
+                                    sbCropped.Append($"{context.Classes[cropped_annotation.Label]} {cropped_annotation.Cx.ConvertToString()} {cropped_annotation.Cy.ConvertToString()} {cropped_annotation.Width.ConvertToString()} {cropped_annotation.Height.ConvertToString()}");
+                                    sbCropped.Append("\n");
+                                }
                             }
                             if (context.WithoutClass ||  sbCropped.Length > 0) // no augmentation for empty crops
                             {
