@@ -10,7 +10,7 @@ namespace Darknet.Dataset.Merger
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            Log.AddTextFileLogger(new ZeroLevel.Logging.TextFileLoggerOptions().SetFolderPath("long"), ZeroLevel.Logging.LogLevel.FullStandart);
+            Log.AddTextFileLogger(new ZeroLevel.Logging.TextFileLoggerOptions().SetFolderPath("logs"), ZeroLevel.Logging.LogLevel.FullStandart);
             base.OnStartup(e);
         }
     }
