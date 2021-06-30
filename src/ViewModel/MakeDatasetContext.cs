@@ -200,6 +200,8 @@ namespace Darknet.Dataset.Merger.ViewModel
         private ObservableCollection<ImageInfo> _images = new ObservableCollection<ImageInfo>();
         private ObservableCollection<Annotation> _bboxes = new ObservableCollection<Annotation>();
 
+        public string CurrentFolder { get; set; }
+
         private string _rootFolder;
         private ImageSource _viewImage;
         private ImageInfo _currentImage;
@@ -210,8 +212,6 @@ namespace Darknet.Dataset.Merger.ViewModel
         public ObservableCollection<ImageInfo> Images { get { return _images; } }
         public string ClassTitle { get { return "Classes" + (string.IsNullOrWhiteSpace(_defaultClass) ? string.Empty : $" (default: {_defaultClass})"); } }
         #endregion
-
-
 
         public ImageInfo SelectedImage { get { return _currentImage; } set { _currentImage = value; OnPropertyChanged("SelectedImage"); } }
 
@@ -232,6 +232,8 @@ namespace Darknet.Dataset.Merger.ViewModel
         {
             _rootFolder = folder;
             AnalizeFolder(folder);
+            CurrentFolder = Path.GetFileName(folder);
+            OnPropertyChanged("CurrentFolder");
         }
 
         public void UpdateBBoxes()

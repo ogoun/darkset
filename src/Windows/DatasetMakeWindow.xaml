@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Darknet.Dataset.Merger.Windows"
         xmlns:converters="clr-namespace:Darknet.Dataset.Merger.Convertors"
         mc:Ignorable="d"
-        Title="DatasetMakeWindow" Height="750" Width="1080" Loaded="Window_Loaded" PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" Closed="Window_Closed">
+        Title="{Binding CurrentFolder}" Height="750" Width="1080" Loaded="Window_Loaded" PreviewKeyDown="Window_PreviewKeyDown" PreviewKeyUp="Window_PreviewKeyUp" Closed="Window_Closed">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>

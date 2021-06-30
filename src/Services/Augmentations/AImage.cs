@@ -3,7 +3,6 @@ using ImageMagick;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace Darknet.Dataset.Merger.Services
 {
@@ -32,7 +31,7 @@ namespace Darknet.Dataset.Merger.Services
         {
             _current.InterpolativeResize(width, height, PixelInterpolateMethod.Mesh);
         }
-
+        
         public void Reset()
         {
             _current.Dispose();
