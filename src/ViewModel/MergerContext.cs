@@ -36,6 +36,12 @@ namespace Darknet.Dataset.Merger
 
         #region Augmentations
 
+        public bool ResizeOriginal
+        {
+            get { return _selectedDataset?.Augmentations?.ResizeOriginal ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.ResizeOriginal = value; OnPropertyChanged("ResizeOriginal"); } }
+        }
+
         public bool Grayscale
         {
             get { return _selectedDataset?.Augmentations?.Grayscale ?? false; }

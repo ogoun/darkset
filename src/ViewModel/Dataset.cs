@@ -43,25 +43,37 @@ namespace Darknet.Dataset.Merger
 
             string trainImagesFilePath, validImagesFilePath, namesFilePath;
 
-            if (System.IO.Path.IsPathRooted(dataInfo["train"]))
+            if (Path.IsPathRooted(dataInfo["train"]))
             {
                 trainImagesFilePath = dataInfo["train"];
+                if (!File.Exists(trainImagesFilePath))
+                {
+                    trainImagesFilePath = System.IO.Path.Combine(_datasetPath, Path.GetFileName(dataInfo["train"]));
+                }
             }
             else
             {
                 trainImagesFilePath = System.IO.Path.Combine(_datasetPath, dataInfo["train"]);
             }
-            if (System.IO.Path.IsPathRooted(dataInfo["valid"]))
+            if (Path.IsPathRooted(dataInfo["valid"]))
             {
                 validImagesFilePath = dataInfo["valid"];
+                if (!File.Exists(validImagesFilePath))
+                {
+                    validImagesFilePath = System.IO.Path.Combine(_datasetPath, Path.GetFileName(dataInfo["valid"]));
+                }
             }
             else
             {
                 validImagesFilePath = System.IO.Path.Combine(_datasetPath, dataInfo["valid"]);
             }
-            if (System.IO.Path.IsPathRooted(dataInfo["names"]))
+            if (Path.IsPathRooted(dataInfo["names"]))
             {
                 namesFilePath = dataInfo["names"];
+                if (!File.Exists(namesFilePath))
+                {
+                    namesFilePath = System.IO.Path.Combine(_datasetPath, Path.GetFileName(dataInfo["names"]));
+                }
             }
             else
             {

@@ -22,68 +22,94 @@ namespace Darknet.Dataset.Merger.Services
                 }
             }
             var local = new LocalAnnotationContext { SourceAnnotationText = sb.ToString(), Image = imageInfo };
-            var resize = new Func<AImage, AImage>(img =>
+
+            if (options.HasAugmentation == false && options.Cut == false && options.ResizeOriginal == false)
             {
-                if (img.Width > MAX_SIDE_LIMIT || img.Height > MAX_SIDE_LIMIT)
+                // Простое копирование
+                var (imgName, lblName) = context.GetNextObjFileNames();
+                File.Copy(imageInfo.FilePath, imgName);
+                File.WriteAllText(lblName, local.SourceAnnotationText);
+            }
+            else
+            {
+                var resize = new Func<AImage, AImage>(img =>
                 {
-                    float scale = 1.0f;
-                    if (img.Width > img.Height)
+                    if (img.Width > MAX_SIDE_LIMIT || img.Height > MAX_SIDE_LIMIT)
                     {
-                        scale = MAX_SIDE_LIMIT / img.Width;
+                        float scale = 1.0f;
+                        if (img.Width > img.Height)
+                        {
+                            scale = MAX_SIDE_LIMIT / img.Width;
+                        }
+                        else
+                        {
+                            scale = MAX_SIDE_LIMIT / img.Height;
+                        }
+                        img.Resize((int)(img.Width * scale), (int)(img.Height * scale));
+                        img.SaveAsSource();
+                    }
+                    return img;
+                });
+                var store = new Action<AImage, string>((ifac, ann) =>
+                {
+                    var (imgName, lblName) = context.GetNextAugFileNames();
+                    ifac.Write(imgName);
+                    File.WriteAllText(lblName, ann);
+                });
+                using (var factory = new AImage(imageInfo.FilePath))
+                {
+                    if (options.ResizeOriginal)
+                    {
+                        using (var original = resize(factory.Clone()))
+                        {
+                            // Save resized original image
+                            var (imgName, lblName) = context.GetNextObjFileNames();
+                            original.Write(imgName);
+                            File.WriteAllText(lblName, local.SourceAnnotationText);
+
+                            ApplyAugmentations(original, local, context, options);
+                        }
                     }
                     else
                     {
-                        scale = MAX_SIDE_LIMIT / img.Height;
-                    }
-                    img.Resize((int)(img.Width * scale), (int)(img.Height * scale));
-                    img.SaveAsSource();
-                }
-                return img;
-            });
-            var store = new Action<AImage, string>((ifac, ann) =>
-            {
-                var (imgName, lblName) = context.GetNextAugFileNames();
-                ifac.Write(imgName);
-                File.WriteAllText(lblName, ann);
-            });
-            using (var factory = new AImage(imageInfo.FilePath))
-            {
-                using (var original = resize(factory.Clone()))
-                {
-                    // Save resized original image
-                    var (imgName, lblName) = context.GetNextObjFileNames();
-                    original.Write(imgName);
-                    File.WriteAllText(lblName, local.SourceAnnotationText);
-
-                    ApplyAugmentations(original, local, context, options);
-                }
-                if ((context.WithoutClass || local.Image.Annotations.Any())
-                    && options.Cut
-                    && options.CutWidth > 0
-                    && options.CutHeight > 0
-                    && options.CutWidth < (factory.Width / 1.5)
-                    && options.CutHeight < (factory.Height / 1.5))
-                {
-                    foreach (var cropped in factory.Crop(local.Image.Annotations, options.CutWidth, options.CutHeight, options.CutOverlaps))
-                    {
-                        using (cropped.Item1)
+                        using (var original = factory.Clone())
                         {
-                            var sbCropped = new StringBuilder();
-                            foreach (var cropped_annotation in cropped.Item2)
+                            // Save resized original image
+                            var (imgName, lblName) = context.GetNextObjFileNames();
+                            original.Write(imgName);
+                            File.WriteAllText(lblName, local.SourceAnnotationText);
+
+                            ApplyAugmentations(original, local, context, options);
+                        }
+                    }
+                    if ((context.WithoutClass || local.Image.Annotations.Any())
+                        && options.Cut
+                        && options.CutWidth > 0
+                        && options.CutHeight > 0
+                        && options.CutWidth < (factory.Width / 1.5)
+                        && options.CutHeight < (factory.Height / 1.5))
+                    {
+                        foreach (var cropped in factory.Crop(local.Image.Annotations, options.CutWidth, options.CutHeight, options.CutOverlaps))
+                        {
+                            using (cropped.Item1)
                             {
-                                if (context.Classes.ContainsKey(cropped_annotation.Label))
+                                var sbCropped = new StringBuilder();
+                                foreach (var cropped_annotation in cropped.Item2)
                                 {
-                                    sbCropped.Append($"{context.Classes[cropped_annotation.Label]} {cropped_annotation.Cx.ConvertToString()} {cropped_annotation.Cy.ConvertToString()} {cropped_annotation.Width.ConvertToString()} {cropped_annotation.Height.ConvertToString()}");
-                                    sbCropped.Append("\n");
+                                    if (context.Classes.ContainsKey(cropped_annotation.Label))
+                                    {
+                                        sbCropped.Append($"{context.Classes[cropped_annotation.Label]} {cropped_annotation.Cx.ConvertToString()} {cropped_annotation.Cy.ConvertToString()} {cropped_annotation.Width.ConvertToString()} {cropped_annotation.Height.ConvertToString()}");
+                                        sbCropped.Append("\n");
+                                    }
                                 }
-                            }
-                            if (context.WithoutClass ||  sbCropped.Length > 0) // no augmentation for empty crops
-                            {
-                                var croppedContext = new LocalAnnotationContext { SourceAnnotationText = sbCropped.ToString(), Image = new ImageInfo(imageInfo.FilePath, imageInfo.TrainType, cropped.Item2) };
-                                using (var croppedAndResized = resize(cropped.Item1))
+                                if (context.WithoutClass || sbCropped.Length > 0) // no augmentation for empty crops
                                 {
-                                    store(croppedAndResized, croppedContext.SourceAnnotationText);
-                                    ApplyAugmentations(cropped.Item1, croppedContext, context, options);
+                                    var croppedContext = new LocalAnnotationContext { SourceAnnotationText = sbCropped.ToString(), Image = new ImageInfo(imageInfo.FilePath, imageInfo.TrainType, cropped.Item2) };
+                                    using (var croppedAndResized = resize(cropped.Item1))
+                                    {
+                                        store(croppedAndResized, croppedContext.SourceAnnotationText);
+                                        ApplyAugmentations(cropped.Item1, croppedContext, context, options);
+                                    }
                                 }
                             }
                         }
