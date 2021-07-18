@@ -8,7 +8,7 @@ namespace Darknet.Dataset.Merger.Services
 {
     public static class Augmentator
     {
-        private const float MAX_SIDE_LIMIT = 1216.0f;
+        private const float SIDE_LIMIT = 896.0f;
 
         public static int Augmentate(ImageInfo imageInfo, AugmentationContext context, AugmentationOptions options)
         {
@@ -34,16 +34,16 @@ namespace Darknet.Dataset.Merger.Services
             {
                 var resize = new Func<AImage, AImage>(img =>
                 {
-                    if (img.Width > MAX_SIDE_LIMIT || img.Height > MAX_SIDE_LIMIT)
+                    if (img.Width > SIDE_LIMIT || img.Height > SIDE_LIMIT)
                     {
                         float scale = 1.0f;
-                        if (img.Width > img.Height)
+                        if (img.Width < img.Height)
                         {
-                            scale = MAX_SIDE_LIMIT / img.Width;
+                            scale = SIDE_LIMIT / img.Width;
                         }
                         else
                         {
-                            scale = MAX_SIDE_LIMIT / img.Height;
+                            scale = SIDE_LIMIT / img.Height;
                         }
                         img.Resize((int)(img.Width * scale), (int)(img.Height * scale));
                         img.SaveAsSource();

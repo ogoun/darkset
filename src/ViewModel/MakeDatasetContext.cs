@@ -349,33 +349,42 @@ namespace Darknet.Dataset.Merger.ViewModel
             LoadClasses();
             foreach (var file in filelist)
             {
-                var lp = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".txt");
-                var a = new List<Annotation>();
-                if (File.Exists(lp))
+                try
                 {
-                    int classNumber;
-                    float cx, cy, w, h;
-                    foreach (var line in File.ReadAllLines(lp))
+                    var lp = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".txt");
+                    var a = new List<Annotation>();
+                    if (File.Exists(lp))
                     {
-                        var parts = line.Split(' ').Where(s => string.IsNullOrWhiteSpace(s) == false).ToArray();
-                        if (int.TryParse(parts[0], out classNumber) == false) continue;
-                        cx = parts[1].TryConvertToFloat();
-                        cy = parts[2].TryConvertToFloat();
-                        w = parts[3].TryConvertToFloat();
-                        h = parts[4].TryConvertToFloat();
-                        if (float.IsNaN(cx) || float.IsNaN(cy) || float.IsNaN(w) || float.IsNaN(h)) continue;
-                        a.Add(new Annotation
+                        int classNumber;
+                        float cx, cy, w, h;
+                        foreach (var line in File.ReadAllLines(lp))
                         {
-                            Class = classNumber,
-                            Cx = cx,
-                            Cy = cy,
-                            Width = w,
-                            Height = h,
-                            Label = _classes.Count > classNumber && classNumber >= 0 ? _classes[classNumber] : classNumber.ToString()
-                        });
+
+                            var parts = line.Split(' ').Where(s => string.IsNullOrWhiteSpace(s) == false).ToArray();
+                            if (int.TryParse(parts[0], out classNumber) == false) continue;
+                            cx = parts[1].TryConvertToFloat();
+                            cy = parts[2].TryConvertToFloat();
+                            w = parts[3].TryConvertToFloat();
+                            h = parts[4].TryConvertToFloat();
+                            if (float.IsNaN(cx) || float.IsNaN(cy) || float.IsNaN(w) || float.IsNaN(h)) continue;
+                            a.Add(new Annotation
+                            {
+                                Class = classNumber,
+                                Cx = cx,
+                                Cy = cy,
+                                Width = w,
+                                Height = h,
+                                Label = _classes.Count > classNumber && classNumber >= 0 ? _classes[classNumber] : classNumber.ToString()
+                            });
+
+                        }
                     }
+                    _images.Add(new ImageInfo(file, ImageTrainType.Train, a));
                 }
-                _images.Add(new ImageInfo(file, ImageTrainType.Train, a));
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"Fault handle image '{file}'");
+                }
             }
         }
 

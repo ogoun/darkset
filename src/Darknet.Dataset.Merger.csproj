@@ -65,18 +65,20 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magick.NET-Q16-x64, Version=7.22.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=AMD64">
-      <HintPath>packages\Magick.NET-Q16-x64.7.22.0\lib\net40\Magick.NET-Q16-x64.dll</HintPath>
+    <Reference Include="Magick.NET-Q16-x64, Version=8.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=AMD64">
+      <HintPath>packages\Magick.NET-Q16-x64.8.0.1\lib\net20\Magick.NET-Q16-x64.dll</HintPath>
     </Reference>
-    <Reference Include="Magick.NET.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
-      <HintPath>packages\Magick.NET.Core.5.0.0\lib\net40\Magick.NET.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
+    <Reference Include="Magick.NET.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
+      <HintPath>packages\Magick.NET.Core.8.0.1\lib\net20\Magick.NET.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -99,12 +101,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="ZeroLevel, Version=3.3.4.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\ZeroLevel.3.3.4.6\lib\netstandard2.0\ZeroLevel.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -193,7 +189,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.manifest" />
-    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -204,20 +199,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="License-LGPL.txt" />
+    <ProjectReference Include="..\..\Zero\ZeroLevel\ZeroLevel.csproj">
+      <Project>{bebc0114-32ae-4037-8816-a66ad70c4318}</Project>
+      <Name>ZeroLevel</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Installer.exe" />
+    <None Include="Resources\Installer.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\Magick.NET-Q16-x64.7.22.0\build\net40\Magick.NET-Q16-x64.targets" Condition="Exists('packages\Magick.NET-Q16-x64.7.22.0\build\net40\Magick.NET-Q16-x64.targets')" />
+  <Import Project="packages\Magick.NET-Q16-x64.8.0.1\build\net20\Magick.NET-Q16-x64.targets" Condition="Exists('packages\Magick.NET-Q16-x64.8.0.1\build\net20\Magick.NET-Q16-x64.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Magick.NET-Q16-x64.7.22.0\build\net40\Magick.NET-Q16-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Magick.NET-Q16-x64.7.22.0\build\net40\Magick.NET-Q16-x64.targets'))" />
+    <Error Condition="!Exists('packages\Magick.NET-Q16-x64.8.0.1\build\net20\Magick.NET-Q16-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Magick.NET-Q16-x64.8.0.1\build\net20\Magick.NET-Q16-x64.targets'))" />
   </Target>
 </Project>

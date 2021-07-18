@@ -59,5 +59,15 @@ namespace Darknet.Dataset.Merger.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Installer {
+            get {
+                object obj = ResourceManager.GetObject("Installer", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
