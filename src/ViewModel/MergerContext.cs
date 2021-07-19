@@ -35,44 +35,10 @@ namespace Darknet.Dataset.Merger
         #endregion
 
         #region Augmentations
-
-        public bool ResizeOriginal
-        {
-            get { return _selectedDataset?.Augmentations?.ResizeOriginal ?? false; }
-            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.ResizeOriginal = value; OnPropertyChanged("ResizeOriginal"); } }
-        }
-
         public bool Grayscale
         {
             get { return _selectedDataset?.Augmentations?.Grayscale ?? false; }
             set { if (_selectedDataset != null) { _selectedDataset.Augmentations.Grayscale = value; OnPropertyChanged("Grayscale"); } }
-        }
-
-        public bool Moonlight
-        {
-            get { return _selectedDataset?.Augmentations?.Moonlight ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Moonlight = value; OnPropertyChanged("Moonlight"); }
-            }
-        }
-
-        public bool Mirrors
-        {
-            get { return _selectedDataset?.Augmentations?.Mirrors ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Mirrors = value; OnPropertyChanged("Mirrors"); }
-            }
-        }
-
-        public bool Noise
-        {
-            get { return _selectedDataset?.Augmentations?.Noise ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Noise = value; OnPropertyChanged("Noise"); }
-            }
         }
 
         public bool Sepia
@@ -120,6 +86,49 @@ namespace Darknet.Dataset.Merger
             }
         }
 
+        public bool ResizeToInput
+        {
+            get { return _selectedDataset?.Augmentations?.ResizeToInput ?? false; }
+            set
+            {
+                if (_selectedDataset != null) { _selectedDataset.Augmentations.ResizeToInput = value; OnPropertyChanged("ResizeToInput"); }
+            }
+        }
+
+        public string InputWidth
+        {
+            get { return _selectedDataset?.Augmentations?.InputWidth.ToString(); }
+            set
+            {
+                if (_selectedDataset != null)
+                {
+                    int test;
+                    if (int.TryParse(value, out test))
+                    {
+                        _selectedDataset.Augmentations.InputWidth = test;
+                    }
+                    OnPropertyChanged("InputWidth");
+                }
+            }
+        }
+
+        public string InputHeight
+        {
+            get { return _selectedDataset?.Augmentations?.InputHeight.ToString(); }
+            set
+            {
+                if (_selectedDataset != null)
+                {
+                    int test;
+                    if (int.TryParse(value, out test))
+                    {
+                        _selectedDataset.Augmentations.InputHeight = test;
+                    }
+                    OnPropertyChanged("InputHeight");
+                }
+            }
+        }
+
         public bool OverrideFragments
         {
             get { return _selectedDataset?.Augmentations?.CutOverlaps ?? false; }
@@ -135,15 +144,6 @@ namespace Darknet.Dataset.Merger
             set
             {
                 if (_selectedDataset != null) { _selectedDataset.Augmentations.LinesNoise = value; OnPropertyChanged("LinesNoise"); }
-            }
-        }
-
-        public bool Sin
-        {
-            get { return _selectedDataset?.Augmentations?.Sin ?? false; }
-            set
-            {
-                if (_selectedDataset != null) { _selectedDataset.Augmentations.Sin = value; OnPropertyChanged("Sin"); }
             }
         }
 
@@ -284,21 +284,25 @@ namespace Darknet.Dataset.Merger
         public void SelectDataset(Dataset dataset)
         {
             _selectedDataset = dataset;
-            
+
             // i know.. i know.. but i so lazy
 
             OnPropertyChanged("Grayscale");
-            OnPropertyChanged("Mirrors");
-            OnPropertyChanged("Noise");
             OnPropertyChanged("Sepia");
-            OnPropertyChanged("Moonlight");
             OnPropertyChanged("Blur");
             OnPropertyChanged("Charcoal");
             OnPropertyChanged("BBoxBlur");
+            OnPropertyChanged("LinesNoise");
+
             OnPropertyChanged("Cut");
             OnPropertyChanged("OverrideFragments");
             OnPropertyChanged("CutWidth");
             OnPropertyChanged("CutHeight");
+
+            OnPropertyChanged("ResizeToInput");
+            OnPropertyChanged("InputWidth");
+            OnPropertyChanged("InputHeight");
+
         }
 
         public void SelectOutputFolder(object state)

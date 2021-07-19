@@ -1,67 +1,72 @@
 ﻿using Darknet.Dataset.Merger.Model;
-using ImageMagick;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace Darknet.Dataset.Merger.Services
 {
     public class AImage
         : IDisposable
     {
-        private IMagickImage<ushort> _current;
-        private IMagickImage<ushort> _source;
+        private Image<Rgb24> _current;
+        private Image<Rgb24> _source;
 
         public int Width => _current.Width;
         public int Height => _current.Height;
 
         public AImage(string filepath)
         {
-            _current = new MagickImage(filepath);
-            _source = new MagickImage(_current.ToByteArray());
+            _source = Image.Load<Rgb24>(filepath);
+            _current = _source.Clone();
         }
 
-        public AImage(IMagickImage<ushort> image)
+        public AImage(Image<Rgb24> image)
         {
-            _current = image;
-            _source = new MagickImage(_current.ToByteArray());
+            _source = image;
+            _current = _source.Clone();
         }
 
         public void Resize(int width, int height)
         {
-            _current.InterpolativeResize(width, height, PixelInterpolateMethod.Mesh);
+            _current.Mutate(img => img.Resize(width, height));
         }
-        
+
         public void Reset()
         {
             _current.Dispose();
-            _current = new MagickImage(_source.ToByteArray());
+            _current = _source.Clone();
         }
 
         public void SaveAsSource()
         {
             _source.Dispose();
-            _source = new MagickImage(_current.ToByteArray());
+            _source = _current.Clone();
         }
 
+        private IImageEncoder imageEncoder = new JpegEncoder
+        {
+            Quality = 90,
+            Subsample = JpegSubsample.Ratio444
+        };
         public void Write(string filepath)
         {
-            _current.Write(filepath);
+            _current.Save(filepath, imageEncoder);
         }
 
         public AImage Crop(int x, int y, int width, int height)
         {
-            var rect = new MagickGeometry(x, y, width, height);
-            rect.IgnoreAspectRatio = true;
-            var ai = _current.Clone();
-            ai.Crop(rect);
-            return new AImage(ai);
+            var clone = _current.Clone(img => img.Crop(new Rectangle(x, y, width, height)));
+            return new AImage(clone);
         }
 
         public AImage Clone()
         {
-            var ai = new MagickImage(_current.ToByteArray());
-            return new AImage(ai);
+            return new AImage(_current.Clone());
         }
 
         private const float CROPED_BBOX_AREA_MIN_PART = 0.3f;
@@ -148,56 +153,34 @@ namespace Darknet.Dataset.Merger.Services
         #region Augmentations
         public void Blur()
         {
-            _current.AdaptiveBlur();
-        }
-        public void Flip()
-        {
-            _current.Flip();
-        }
-        public void Flop()
-        {
-            _current.Flop();
+            _current.Mutate(img => img.GaussianBlur());
         }
         public void Grayscale()
         {
-            _current.Grayscale();
-        }
-        public void Moonlight()
-        {
-            _current.BlueShift();
-        }
-        public void Noise()
-        {
-            _current.AddNoise(NoiseType.Laplacian, 2.0);
-        }
-        public void Charcoal()
-        {
-            _current.Charcoal();
+            _current.Mutate(img => img.Grayscale());
         }
         public void SepiaTone()
         {
-            _current.SepiaTone();
+            _current.Mutate(img => img.Sepia());
         }
-        public void BlurBoxes(BBOXES boxes)
+        public bool BlurBoxes(BBOXES boxes)
         {
+            bool has = false;
             foreach (var rect in boxes.ToMagikGeometry())
             {
                 if (rect.X >= 0 && rect.Y >= 0 && rect.Width > 0 && rect.Height > 0)
                 {
-                    using (var crop_clone = new MagickImage(_current.ToByteArray()))
-                    {
-                        crop_clone.Crop(rect);
-                        crop_clone.Blur();
-                        _current.Composite(crop_clone, rect.X, rect.Y, CompositeOperator.Over);
-                    }
+                    _current.Mutate(img => img.GaussianBlur(0.67f, rect));
+                    has = true;
                 }
             }
+            return has;
         }
-
         public void LineNoize()
         {
             var rnd = new Random((int)Environment.TickCount);
-            var count = rnd.Next(6 * Math.Max(_current.Width, _current.Height));
+            var count = Math.Max(_current.Width, _current.Height) + rnd.Next(6 * Math.Max(_current.Width, _current.Height));
+
             for (int i = 0; i < count; i++)
             {
                 var x1 = rnd.Next(0, _current.Width);
@@ -206,44 +189,11 @@ namespace Darknet.Dataset.Merger.Services
                 var y2 = rnd.Next(-25, 25);
                 byte[] rgb = new byte[3];
                 rnd.NextBytes(rgb);
-                DrawableFillColor fillColor = new DrawableFillColor(MagickColor.FromRgb(rgb[0], rgb[1], rgb[2]));
-                DrawableLine dl = new DrawableLine(x1, y1, x1 + x2, y1 + y2);
-                _current.Draw(fillColor, dl);
-            }
-        }
-
-        public void FSin()
-        {
-            ushort max = 0;
-            var const_multiplier = 2.0f * Math.PI / 255.0f;
-            var pixels = this._current.GetPixels();
-            var channels = pixels.Channels;
-            for (var i = 0; i < this._current.Width; i++)
-            {
-                for (var j = 0; j < this._current.Height; j++)
+                _current.Mutate(img =>
                 {
-                    for (var c = 0; c < channels; c++)
-                    {
-                        pixels[i, j][c] = (ushort)((.5f * Math.Sin(const_multiplier * ((double)pixels[i, j][c] / 255.0f)) + .5f) * (double)pixels[i, j][c]);
-                        if (pixels[i, j][c] > max) max = pixels[i, j][c];
-                    }
-                }
+                    img.DrawLines(Color.FromRgb(rgb[0], rgb[1], rgb[2]), 1, new PointF[] { new PointF(x1, y1), new PointF(x1 + x2, y1 + y2) });
+                });
             }
-            if (max < 255 * 255)
-            {
-                var ext = 255.0f * 255.0f / (float)max;
-                for (var i = 0; i < this._current.Width; i++)
-                {
-                    for (var j = 0; j < this._current.Height; j++)
-                    {
-                        for (var c = 0; c < channels; c++)
-                        {
-                            pixels[i, j][c] = (ushort)(pixels[i, j][c] * ext);
-                        }
-                    }
-                }
-            }
-            pixels.SetPixel(pixels);
         }
         #endregion
 

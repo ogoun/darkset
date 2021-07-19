@@ -1,6 +1,5 @@
 ﻿using Darknet.Dataset.Merger.Model;
-using ImageMagick;
-using System;
+using SixLabors.ImageSharp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -130,7 +129,7 @@ namespace Darknet.Dataset.Merger.Services
         }
         */
 
-        public IEnumerable<MagickGeometry> ToMagikGeometry()
+        public IEnumerable<Rectangle> ToMagikGeometry()
         {
             //int i = 0;
             //var ignore_rect = new MagickGeometry(-1, -1, -1, -1);
@@ -139,8 +138,7 @@ namespace Darknet.Dataset.Merger.Services
                 /*
                 if (_iou[i] < float.Epsilon) yield return ignore_rect;
                 */
-                var rect = new MagickGeometry((int)box.RBx, (int)box.RBy, (int)box.RBw, (int)box.RBh);
-                rect.IgnoreAspectRatio = true;
+                var rect = new Rectangle((int)box.RBx, (int)box.RBy, (int)box.RBw, (int)box.RBh);
                 yield return rect;
             }
         }

@@ -8,8 +8,6 @@ namespace Darknet.Dataset.Merger.Services
 {
     public static class Augmentator
     {
-        private const float SIDE_LIMIT = 896.0f;
-
         public static int Augmentate(ImageInfo imageInfo, AugmentationContext context, AugmentationOptions options)
         {
             var sb = new StringBuilder();
@@ -23,7 +21,7 @@ namespace Darknet.Dataset.Merger.Services
             }
             var local = new LocalAnnotationContext { SourceAnnotationText = sb.ToString(), Image = imageInfo };
 
-            if (options.HasAugmentation == false && options.Cut == false && options.ResizeOriginal == false)
+            if (options.HasAugmentation == false && options.Cut == false && options.ResizeToInput == false)
             {
                 // Простое копирование
                 var (imgName, lblName) = context.GetNextObjFileNames();
@@ -32,18 +30,18 @@ namespace Darknet.Dataset.Merger.Services
             }
             else
             {
-                var resize = new Func<AImage, AImage>(img =>
+                var resizeToInput = new Func<AImage, AImage>(img =>
                 {
-                    if (img.Width > SIDE_LIMIT || img.Height > SIDE_LIMIT)
+                    if (img.Width > options.InputWidth || img.Height > options.InputHeight)
                     {
                         float scale = 1.0f;
                         if (img.Width < img.Height)
                         {
-                            scale = SIDE_LIMIT / img.Width;
+                            scale = (float)options.InputWidth / img.Width;
                         }
                         else
                         {
-                            scale = SIDE_LIMIT / img.Height;
+                            scale = (float)options.InputHeight / img.Height;
                         }
                         img.Resize((int)(img.Width * scale), (int)(img.Height * scale));
                         img.SaveAsSource();
@@ -58,9 +56,9 @@ namespace Darknet.Dataset.Merger.Services
                 });
                 using (var factory = new AImage(imageInfo.FilePath))
                 {
-                    if (options.ResizeOriginal)
+                    if (options.ResizeToInput)
                     {
-                        using (var original = resize(factory.Clone()))
+                        using (var original = resizeToInput(factory.Clone()))
                         {
                             // Save resized original image
                             var (imgName, lblName) = context.GetNextObjFileNames();
@@ -74,7 +72,7 @@ namespace Darknet.Dataset.Merger.Services
                     {
                         using (var original = factory.Clone())
                         {
-                            // Save resized original image
+                            // Save original image
                             var (imgName, lblName) = context.GetNextObjFileNames();
                             original.Write(imgName);
                             File.WriteAllText(lblName, local.SourceAnnotationText);
@@ -105,9 +103,18 @@ namespace Darknet.Dataset.Merger.Services
                                 if (context.WithoutClass || sbCropped.Length > 0) // no augmentation for empty crops
                                 {
                                     var croppedContext = new LocalAnnotationContext { SourceAnnotationText = sbCropped.ToString(), Image = new ImageInfo(imageInfo.FilePath, imageInfo.TrainType, cropped.Item2) };
-                                    using (var croppedAndResized = resize(cropped.Item1))
+
+                                    if (options.ResizeToInput)
                                     {
-                                        store(croppedAndResized, croppedContext.SourceAnnotationText);
+                                        using (var r = resizeToInput(cropped.Item1))
+                                        {
+                                            store(r, croppedContext.SourceAnnotationText);
+                                            ApplyAugmentations(r, croppedContext, context, options);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        store(cropped.Item1, croppedContext.SourceAnnotationText);
                                         ApplyAugmentations(cropped.Item1, croppedContext, context, options);
                                     }
                                 }
@@ -119,7 +126,8 @@ namespace Darknet.Dataset.Merger.Services
             return context.Counter;
         }
 
-        private static void ApplyAugmentations(AImage factory, LocalAnnotationContext localContext, AugmentationContext context, AugmentationOptions options)
+        private static void ApplyAugmentations(AImage factory, LocalAnnotationContext localContext,
+            AugmentationContext context, AugmentationOptions options)
         {
             var boxes = new BBOXES(localContext.Image.Annotations.Where(a => context.Classes.ContainsKey(a.Label)), factory.Width, factory.Height);
 
@@ -142,42 +150,36 @@ namespace Darknet.Dataset.Merger.Services
                 img.Reset();
             });
 
+            if (options.BBoxBlur && options.LinesNoise)
+            {
+                if (factory.BlurBoxes(boxes))
+                {
+                    factory.LineNoize();
+                    storeWithBB(factory, boxes);
+                    factory.Reset();
+                }
+                else
+                {
+                    factory.LineNoize();
+                    store(factory, localContext.SourceAnnotationText);
+                    factory.Reset();
+                }
+            }
+            else if (options.LinesNoise)
+            {
+                app.Invoke(factory, im => im.LineNoize);
+            }
+            else if (options.BBoxBlur)
+            {
+                if (factory.BlurBoxes(boxes))
+                {
+                    storeWithBB(factory, boxes);
+                    factory.Reset();
+                }
+            }
             if (options.Blur) app.Invoke(factory, im => im.Blur);
             if (options.Grayscale) app.Invoke(factory, im => im.Grayscale);
-            if (options.Moonlight) app.Invoke(factory, im => im.Moonlight);
-            if (options.Noise) app.Invoke(factory, im => im.Noise);
             if (options.Sepia) app.Invoke(factory, im => im.SepiaTone);
-            if (options.Charcoal) app.Invoke(factory, im => im.Charcoal);
-            if (options.LinesNoise) app.Invoke(factory, im => im.LineNoize);
-            if (options.Sin) app.Invoke(factory, im => im.FSin);
-
-            if (options.Mirrors)
-            {
-                var horizontallAnn = new StringBuilder();
-                var verticalAnn = new StringBuilder();
-                localContext.Image.Annotations.Apply(a =>
-                {
-                    if (context.Classes.ContainsKey(a.Label))
-                    {
-                        horizontallAnn.Append($"{context.Classes[a.Label]} {(1.0f - a.Cx).ConvertToString()} {a.Cy.ConvertToString()} {a.Width.ConvertToString()} {a.Height.ConvertToString()}");
-                        horizontallAnn.Append("\n");
-                        verticalAnn.Append($"{context.Classes[a.Label]} {a.Cx.ConvertToString()} {(1 - a.Cy).ConvertToString()} {a.Width.ConvertToString()} {a.Height.ConvertToString()}");
-                        verticalAnn.Append("\n");
-                    }
-                });
-                factory.Flop();
-                store(factory, horizontallAnn.ToString());
-                factory.Reset();
-                factory.Flip();
-                store(factory, verticalAnn.ToString());
-                factory.Reset();
-            }
-            if (options.BBoxBlur)
-            {
-                factory.BlurBoxes(boxes);
-                storeWithBB(factory, boxes);
-                factory.Reset();
-            }
         }
     }
 }

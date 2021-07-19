@@ -16,6 +16,5 @@ namespace Darknet.Dataset.Merger
             Log.AddTextFileLogger(new ZeroLevel.Logging.TextFileLoggerOptions().SetFolderPath("logs"), ZeroLevel.Logging.LogLevel.FullStandart);
             base.OnStartup(e);
         }
-
     }
 }

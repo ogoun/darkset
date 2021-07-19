@@ -3,27 +3,18 @@
     public class AugmentationOptions
     {
         public bool Grayscale { get; set; } = false;
-        public bool Noise { get; set; } = false;
+        public bool Sepia { get; set; } = false;
+        public bool Blur { get; set; } = false;
+        public bool Charcoal { get; set; } = false;
         public bool BBoxBlur { get; set; } = false;
         public bool LinesNoise { get; set; } = false;
-
-        public bool Mirrors { get; set; } = false;
-        public bool Sepia { get; set; } = false;
-        public bool Moonlight { get; set; } = false;
-        public bool Blur { get; set; } = false;
-
-        public bool Charcoal { get; set; } = false;
-        public bool Sin { get; set; } = false;
+        
 
 
         public bool HasAugmentation =>
-            Grayscale || Noise || BBoxBlur || LinesNoise || Sin ||
-            Mirrors || Sepia || Moonlight || Blur || Charcoal;
+            Grayscale || BBoxBlur || LinesNoise || 
+            Sepia || Blur || Charcoal;
 
-        /// <summary>
-        /// Менять оригинальный размер на более подходящий входу нейросети
-        /// </summary>
-        public bool ResizeOriginal { get; set; } = false;
         /// <summary>
         /// Резать оригинальное изображение на части
         /// </summary>
@@ -33,12 +24,23 @@
         /// </summary>
         public bool CutOverlaps { get; set; } = true;
         /// <summary>
-        /// Ширина фрагмнта
+        /// Ширина фрагмента
         /// </summary>
-        public int CutWidth { get; set; } = 1920;
+        public int CutWidth { get; set; } = 1280;
         /// <summary>
-        /// Высота фрагмнта
+        /// Высота фрагмента
         /// </summary>
-        public int CutHeight { get; set; } = 1920;
+        public int CutHeight { get; set; } = 1280;
+
+
+        public bool ResizeToInput { get; set; } = false;
+        /// <summary>
+        /// Ширина входа
+        /// </summary>
+        public int InputWidth { get; set; } = 896;
+        /// <summary>
+        /// Высота входа
+        /// </summary>
+        public int InputHeight { get; set; } = 896;
     }
 }
