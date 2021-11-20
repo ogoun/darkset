@@ -163,14 +163,27 @@ namespace Darknet.Dataset.Merger.Services
         {
             _current.Mutate(img => img.Sepia());
         }
-        public bool BlurBoxes(BBOXES boxes)
+
+        public void FlipHorizontal()
+        {
+            _current.Mutate(img => img.Flip(FlipMode.Horizontal));
+        }
+        public void FlipVertical()
+        {
+            _current.Mutate(img => img.Flip(FlipMode.Vertical));
+        }
+        public void FlipAndRotate(RotateMode rotate, FlipMode flip)
+        {
+            _current.Mutate(img => img.RotateFlip(rotate, flip));
+        }
+        public bool BlurBoxes(IEnumerable<Annotation> annotations)
         {
             bool has = false;
-            foreach (var rect in boxes.ToMagikGeometry())
+            foreach (var a in annotations)
             {
-                if (rect.X >= 0 && rect.Y >= 0 && rect.Width > 0 && rect.Height > 0)
+                if (a.Left >= 0 && a.Top >= 0 && a.Width > 0 && a.Height > 0)
                 {
-                    _current.Mutate(img => img.GaussianBlur(0.67f, rect));
+                    _current.Mutate(img => img.GaussianBlur(0.67f, a.ToMagikGeometry(Width, Height)));
                     has = true;
                 }
             }
@@ -179,7 +192,7 @@ namespace Darknet.Dataset.Merger.Services
         public void LineNoize()
         {
             var rnd = new Random((int)Environment.TickCount);
-            var count = Math.Max(_current.Width, _current.Height) + rnd.Next(6 * Math.Max(_current.Width, _current.Height));
+            var count = Math.Max(_current.Width, _current.Height) + rnd.Next(2 * Math.Max(_current.Width, _current.Height));
 
             for (int i = 0; i < count; i++)
             {

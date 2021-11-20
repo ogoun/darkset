@@ -18,7 +18,6 @@ namespace Darknet.Dataset.Merger.Model
             _files = files;
         }
 
-        public bool WithoutClass { get; set; }
         public int Counter { get { return _counter; } }
         public IReadOnlyDictionary<string, int> Classes { get; set; }
 

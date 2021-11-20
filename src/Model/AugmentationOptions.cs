@@ -8,7 +8,7 @@
         public bool Charcoal { get; set; } = false;
         public bool BBoxBlur { get; set; } = false;
         public bool LinesNoise { get; set; } = false;
-        
+        public bool WithoutClass { get; set; } = false;
 
 
         public bool HasAugmentation =>
@@ -37,10 +37,10 @@
         /// <summary>
         /// Ширина входа
         /// </summary>
-        public int InputWidth { get; set; } = 896;
+        public int InputWidth { get; set; } = 640;
         /// <summary>
         /// Высота входа
         /// </summary>
-        public int InputHeight { get; set; } = 896;
+        public int InputHeight { get; set; } = 640;
     }
 }

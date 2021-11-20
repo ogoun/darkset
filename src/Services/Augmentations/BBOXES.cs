@@ -32,7 +32,6 @@ namespace Darknet.Dataset.Merger.Services
         }
 
         private readonly List<bbox> _bboxes;
-        //private readonly float[] _iou;
         private readonly float _width;
         private readonly float _height;
 
@@ -60,84 +59,12 @@ namespace Darknet.Dataset.Merger.Services
                     RBy = (a.Cy - a.Height / 2.0f) * _height
                 });
             }
-            /*_iou = new float[_bboxes.Count];
-            for (int i = 0; i < _bboxes.Count - 1; i++)
-            {
-                for (int j = i + 1; j < _bboxes.Count; j++)
-                {
-                    var iou = IOU(_bboxes[i], _bboxes[j]);
-                    if (_iou[i] < iou)
-                    {
-                        _iou[i] = iou;
-                    }
-                    if (_iou[j] < iou)
-                    {
-                        _iou[j] = iou;
-                    }
-                }
-            }*/
         }
-
-        /*
-        private static void BoxRecalculate(float width, float height, ref bbox box)
-        {
-            if (box.RBx < 0)
-            {
-                box.RBw += box.RBx;
-                box.RBx = 0;
-                box.RCx = box.RBw / 2.0f;
-            }
-            if (box.RBy < 0)
-            {
-                box.RBh += box.RBy;
-                box.RBy = 0;
-                box.RCy = box.RBh / 2.0f;
-            }
-            if ((box.RBx + box.RBw) > width)
-            {
-                box.RBw = width - box.RBx;
-                box.RBx = width - box.RBw;
-                box.RCx = width - box.RBw / 2.0f;
-            }
-            if ((box.RBy + box.RBh) > height)
-            {
-                box.RBh = height - box.RBy;
-                box.RBy = height - box.RBh;
-                box.RCy = height - box.RBh / 2.0f;
-            }
-            box.RCx = box.RBx + box.RBw / 2.0f;
-            box.RCy = box.RBy + box.RBh / 2.0f;
-            box.Cx = box.RCx / width;
-            box.Cy = box.RCy / height;
-            box.Bw = box.RBw / width;
-            box.Bh = box.RBh / width;
-        }
-
-        private static float IOU(bbox box1, bbox box2)
-        {
-            var left = (float)Math.Max(box1.RBx, box2.RBx);
-            var right = (float)Math.Min(box1.RRight, box2.RRight);
-
-            var top = (float)Math.Max(box1.RBy, box2.RBy);
-            var bottom = (float)Math.Min(box1.RBottom, box2.RBottom);
-
-            var width = (float)(right - left);
-            var height = (float)(bottom - top);
-
-            var intersectionArea = (float)(width * height);
-            return intersectionArea / (float)(box1.RArea + box2.RArea - intersectionArea);
-        }
-        */
 
         public IEnumerable<Rectangle> ToMagikGeometry()
         {
-            //int i = 0;
-            //var ignore_rect = new MagickGeometry(-1, -1, -1, -1);
             foreach (var box in _bboxes)
             {
-                /*
-                if (_iou[i] < float.Epsilon) yield return ignore_rect;
-                */
                 var rect = new Rectangle((int)box.RBx, (int)box.RBy, (int)box.RBw, (int)box.RBh);
                 yield return rect;
             }

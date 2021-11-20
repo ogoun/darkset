@@ -217,7 +217,6 @@ namespace Darknet.Dataset.Merger
         private string _outputFolder;
         private string _info;
         public ObservableCollection<Dataset> Datasets { get; set; }
-        private bool _withoutClass = true;
         public ObservableCollection<ImageClass> Classes { get; set; }
 
         public string OutputFolder
@@ -237,12 +236,15 @@ namespace Darknet.Dataset.Merger
         {
             get
             {
-                return _withoutClass;
+                return _selectedDataset?.Augmentations?.WithoutClass ?? false;
             }
             set
             {
-                _withoutClass = value;
-                OnPropertyChanged("WithoutClass");
+                if (_selectedDataset != null)
+                {
+                    _selectedDataset.Augmentations.WithoutClass = value;
+                    OnPropertyChanged("WithoutClass");
+                }
             }
         }
 
@@ -303,6 +305,7 @@ namespace Darknet.Dataset.Merger
             OnPropertyChanged("InputWidth");
             OnPropertyChanged("InputHeight");
 
+            OnPropertyChanged("WithoutClass");
         }
 
         public void SelectOutputFolder(object state)
@@ -442,7 +445,6 @@ namespace Darknet.Dataset.Merger
                 {
                     TargetFolder = _outputFolder,
                     Datasets = Datasets,
-                    WithoutClass = _withoutClass,
                     Classes = Classes
                 }, p =>
                 {

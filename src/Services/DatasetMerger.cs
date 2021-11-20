@@ -46,8 +46,7 @@ namespace Darknet.Dataset.Merger.Services
 
             var augmentationContext = new AugmentationContext(counter, objFolder, files)
             {
-                Classes = classes,
-                WithoutClass = options.WithoutClass
+                Classes = classes
             };
             int image_progress = 0;
             foreach (var dataset in options.Datasets)
