@@ -5,6 +5,7 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Convolution;
 using System;
 using System.Collections.Generic;
 
@@ -51,7 +52,7 @@ namespace Darknet.Dataset.Merger.Services
         private IImageEncoder imageEncoder = new JpegEncoder
         {
             Quality = 90,
-            Subsample = JpegSubsample.Ratio444
+            ColorType = JpegColorType.YCbCrRatio444
         };
         public void Write(string filepath)
         {
@@ -151,6 +152,28 @@ namespace Darknet.Dataset.Merger.Services
         }
 
         #region Augmentations
+        public void ApplyPrewittKernel()
+        {
+            _current.Mutate(img => img.ApplyProcessor(new EdgeDetector2DProcessor(EdgeDetector2DKernel.PrewittKernel, false)));
+        }
+        public void ApplyKayyaliKernel()
+        {
+            _current.Mutate(img => img.ApplyProcessor(new EdgeDetector2DProcessor(EdgeDetector2DKernel.KayyaliKernel, false)));
+        }
+        public void ApplyScharrKernel()
+        {
+            _current.Mutate(img => img.ApplyProcessor(new EdgeDetector2DProcessor(EdgeDetector2DKernel.ScharrKernel, false)));
+        }
+        public void ApplyRobertsCrossKernel()
+        {
+            _current.Mutate(img => img.ApplyProcessor(new EdgeDetector2DProcessor(EdgeDetector2DKernel.RobertsCrossKernel, false)));
+        }
+        public void ApplySobelKernel()
+        {
+            _current.Mutate(img => img.ApplyProcessor(new EdgeDetector2DProcessor(EdgeDetector2DKernel.SobelKernel, false)));
+        }
+
+
         public void Blur()
         {
             _current.Mutate(img => img.GaussianBlur());

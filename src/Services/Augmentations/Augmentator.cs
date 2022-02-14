@@ -260,6 +260,13 @@ namespace Darknet.Dataset.Merger.Services
             if (options.Blur) app.Invoke(factory, im => im.Blur);
             if (options.Grayscale) app.Invoke(factory, im => im.Grayscale);
             if (options.Sepia) app.Invoke(factory, im => im.SepiaTone);
+
+
+            if (options.PrewittKernel) app.Invoke(factory, im => im.ApplyPrewittKernel);
+            if (options.KayyaliKernel) app.Invoke(factory, im => im.ApplyKayyaliKernel);
+            if (options.ScharrKernel) app.Invoke(factory, im => im.ApplyScharrKernel);
+            if (options.RobertsCrossKernel) app.Invoke(factory, im => im.ApplyRobertsCrossKernel);
+            if (options.SobelKernel) app.Invoke(factory, im => im.ApplySobelKernel);
         }
     }
 }

@@ -2,12 +2,13 @@
 using Darknet.Dataset.Merger.Services;
 using Darknet.Dataset.Merger.ViewModel;
 using Darknet.Dataset.Merger.Windows;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -35,6 +36,32 @@ namespace Darknet.Dataset.Merger
         #endregion
 
         #region Augmentations
+        public bool PrewittKernel
+        {
+            get { return _selectedDataset?.Augmentations?.PrewittKernel ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.PrewittKernel = value; OnPropertyChanged("PrewittKernel"); } }
+        }
+        public bool KayyaliKernel
+        {
+            get { return _selectedDataset?.Augmentations?.KayyaliKernel ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.KayyaliKernel = value; OnPropertyChanged("KayyaliKernel"); } }
+        }
+        public bool ScharrKernel
+        {
+            get { return _selectedDataset?.Augmentations?.ScharrKernel ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.ScharrKernel = value; OnPropertyChanged("ScharrKernel"); } }
+        }
+        public bool RobertsCrossKernel
+        {
+            get { return _selectedDataset?.Augmentations?.RobertsCrossKernel ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.RobertsCrossKernel = value; OnPropertyChanged("RobertsCrossKernel"); } }
+        }
+        public bool SobelKernel
+        {
+            get { return _selectedDataset?.Augmentations?.SobelKernel ?? false; }
+            set { if (_selectedDataset != null) { _selectedDataset.Augmentations.SobelKernel = value; OnPropertyChanged("SobelKernel"); } }
+        }
+        
         public bool Grayscale
         {
             get { return _selectedDataset?.Augmentations?.Grayscale ?? false; }
@@ -288,6 +315,11 @@ namespace Darknet.Dataset.Merger
             _selectedDataset = dataset;
 
             // i know.. i know.. but i so lazy
+            OnPropertyChanged("PrewittKernel");
+            OnPropertyChanged("KayyaliKernel");
+            OnPropertyChanged("ScharrKernel");
+            OnPropertyChanged("RobertsCrossKernel");
+            OnPropertyChanged("SobelKernel");
 
             OnPropertyChanged("Grayscale");
             OnPropertyChanged("Sepia");
@@ -310,36 +342,36 @@ namespace Darknet.Dataset.Merger
 
         public void SelectOutputFolder(object state)
         {
-            using (var ofd = new FolderBrowserDialog())
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Please select a folder.";
+            dialog.UseDescriptionForTitle = true;
+            if ((bool)dialog.ShowDialog())
             {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    OutputFolder = ofd.SelectedPath;
-                }
+                OutputFolder = dialog.SelectedPath;
             }
         }
 
         public void AppendDataset(object state)
         {
-            using (var ofd = new FolderBrowserDialog())
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Please select a folder.";
+            dialog.UseDescriptionForTitle = true;
+            if ((bool)dialog.ShowDialog())
             {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                Dataset ds = null;
+                try
                 {
-                    Dataset ds = null;
-                    try
-                    {
-                        ds = new Dataset(ofd.SelectedPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                        return;
-                    }
-                    if (ds != null)
-                    {
-                        Datasets.Add(ds);
-                        RecalculateDatasetsInfo();
-                    }
+                    ds = new Dataset(dialog.SelectedPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+                if (ds != null)
+                {
+                    Datasets.Add(ds);
+                    RecalculateDatasetsInfo();
                 }
             }
         }
@@ -364,28 +396,28 @@ namespace Darknet.Dataset.Merger
 
         public void CreateDataset(object state)
         {
-            using (var ofd = new FolderBrowserDialog())
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Please select a folder.";
+            dialog.UseDescriptionForTitle = true;
+            if ((bool)dialog.ShowDialog())
             {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                var w = new DatasetMakeWindow(dialog.SelectedPath);
+                if (true == w.ShowDialog())
                 {
-                    var w = new DatasetMakeWindow(ofd.SelectedPath);
-                    if (true == w.ShowDialog())
+                    Dataset ds = null;
+                    try
                     {
-                        Dataset ds = null;
-                        try
-                        {
-                            ds = new Dataset(ofd.SelectedPath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                            return;
-                        }
-                        if (ds != null)
-                        {
-                            Datasets.Add(ds);
-                            RecalculateDatasetsInfo();
-                        }
+                        ds = new Dataset(dialog.SelectedPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
+                    }
+                    if (ds != null)
+                    {
+                        Datasets.Add(ds);
+                        RecalculateDatasetsInfo();
                     }
                 }
             }

@@ -2,6 +2,11 @@
 {
     public class AugmentationOptions
     {
+        public bool PrewittKernel { get; set; } = false;
+        public bool KayyaliKernel { get; set; } = false;
+        public bool ScharrKernel { get; set; } = false;
+        public bool RobertsCrossKernel { get; set; } = false;
+        public bool SobelKernel { get; set; } = false;
         public bool Grayscale { get; set; } = false;
         public bool Sepia { get; set; } = false;
         public bool Blur { get; set; } = false;
@@ -12,8 +17,9 @@
 
 
         public bool HasAugmentation =>
-            Grayscale || BBoxBlur || LinesNoise || 
-            Sepia || Blur || Charcoal;
+            Grayscale || BBoxBlur || LinesNoise ||
+            Sepia || Blur || Charcoal ||
+            PrewittKernel || KayyaliKernel || ScharrKernel || RobertsCrossKernel || SobelKernel;
 
         /// <summary>
         /// Резать оригинальное изображение на части
